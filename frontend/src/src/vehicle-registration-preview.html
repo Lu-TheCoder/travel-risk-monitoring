@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Registration Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .vehicle-registration-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #ff3b30;
+            font-size: 24px;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background-color: transparent;
+            color: #ff3b30;
+            border: 1px solid #ff3b30;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 59, 48, 0.1);
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+        }
+
+        .form-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .vehicles-list {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .half-width {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff3b30;
+            box-shadow: 0 0 0 2px rgba(255, 59, 48, 0.2);
+        }
+
+        .error-message {
+            color: #ff3b30;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 0;
+        }
+
+        .vulnerability-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .vulnerability-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .vulnerability-option:hover {
+            border-color: #ff3b30;
+        }
+
+        .vulnerability-option.selected {
+            background-color: rgba(255, 59, 48, 0.1);
+            border-color: #ff3b30;
+        }
+
+        .vulnerability-icon {
+            width: 24px;
+            height: 24px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mock-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff3b30;
+        }
+
+        .vulnerability-icon.mock-icon i {
+            font-size: 16px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .primary-button, .secondary-button {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .primary-button i, .secondary-button i {
+            font-size: 14px;
+        }
+
+        .primary-button {
+            background-color: #ff3b30;
+            color: white;
+            border: none;
+        }
+
+        .primary-button:hover {
+            background-color: #e0352b;
+        }
+
+        .secondary-button {
+            background-color: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .secondary-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .vehicles-list h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .vehicle-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .vehicle-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .vehicle-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .vehicle-icon {
+            width: 48px;
+            height: 48px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vehicle-icon.mock-icon i {
+            font-size: 24px;
+        }
+
+        .vehicle-details {
+            flex: 1;
+        }
+
+        .vehicle-details h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .license-plate {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #666;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .vehicle-info {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .vulnerability-tags {
+            display: flex;
+            gap: 5px;
+        }
+
+        .vulnerability-tag {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .hail-tag {
+            background-color: #5856d6;
+        }
+
+        .flood-tag {
+            background-color: #007aff;
+        }
+
+        .wind-tag {
+            background-color: #34c759;
+        }
+
+        .vehicle-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .icon-button {
+            background: transparent;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .icon-button i {
+            font-size: 16px;
+        }
+
+        .icon-button.edit {
+            color: #ff3b30;
+        }
+
+        .icon-button.edit:hover {
+            background-color: rgba(255, 59, 48, 0.1);
+        }
+
+        .icon-button.delete {
+            color: #ff3b30;
+        }
+
+        .icon-button.delete:hover {
+            background-color: rgba(255, 59, 48, 0.1);
+        }
+
+        .no-vehicles {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon.mock-icon {
+            background-image: none;
+        }
+
+        .empty-state-icon.mock-icon i {
+            font-size: 48px;
+            color: #ff3b30;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .vehicle-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .vehicle-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .vehicle-actions {
+                margin-top: 10px;
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="vehicle-registration-container">
+        <div class="header">
+            <h1>Register New Vehicle</h1>
+            <button class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </button>
+        </div>
+        
+        <div class="content-wrapper">
+            <div class="form-container">
+                <form>
+                    <div class="form-group">
+                        <label for="name">Vehicle Name</label>
+                        <input type="text" id="name" placeholder="e.g. My Family Car">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="licensePlate">License Plate</label>
+                        <input type="text" id="licensePlate" placeholder="e.g. ABC123GP">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="type">Vehicle Type</label>
+                            <select id="type">
+                                <option value="sedan">Sedan</option>
+                                <option value="suv">SUV</option>
+                                <option value="hatchback">Hatchback</option>
+                                <option value="truck">Truck</option>
+                                <option value="motorcycle">Motorcycle</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group half-width">
+                            <label for="year">Year</label>
+                            <input type="number" id="year" placeholder="e.g. 2020">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="color">Color</label>
+                        <input type="text" id="color" placeholder="e.g. Silver">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Vehicle Vulnerabilities</label>
+                        <p class="help-text">Select vulnerabilities to receive customized alerts</p>
+                        
+                        <div class="vulnerability-options">
+                            <div class="vulnerability-option selected">
+                                <div class="vulnerability-icon mock-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <span>Hail Damage</span>
+                            </div>
+                            <div class="vulnerability-option">
+                                <div class="vulnerability-icon mock-icon">
+                                    <i class="fas fa-water"></i>
+                                </div>
+                                <span>Flood Damage</span>
+                            </div>
+                            <div class="vulnerability-option">
+                                <div class="vulnerability-icon mock-icon">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <span>Wind Damage</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="secondary-button">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="primary-button">
+                            <i class="fas fa-plus"></i> Register Vehicle
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="vehicles-list">
+                <h2>Your Vehicles</h2>
+                
+                <div class="vehicle-cards">
+                    <div class="vehicle-card">
+                        <div class="vehicle-icon mock-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        
+                        <div class="vehicle-details">
+                            <h3>Family Sedan</h3>
+                            <p class="license-plate">CA-123-456</p>
+                            <p class="vehicle-info">2019 Sedan Silver</p>
+                            
+                            <div class="vulnerability-tags">
+                                <span class="vulnerability-tag hail-tag">
+                                    <i class="fas fa-snowflake"></i>
+                                    Hail
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="vehicle-actions">
+                            <button class="icon-button edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="icon-button delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-card">
+                        <div class="vehicle-icon mock-icon">
+                            <i class="fas fa-shuttle-van"></i>
+                        </div>
+                        
+                        <div class="vehicle-details">
+                            <h3>Work SUV</h3>
+                            <p class="license-plate">WP-789-012</p>
+                            <p class="vehicle-info">2021 SUV Black</p>
+                            
+                            <div class="vulnerability-tags">
+                                <span class="vulnerability-tag flood-tag">
+                                    <i class="fas fa-water"></i>
+                                    Flood
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="vehicle-actions">
+                            <button class="icon-button edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="icon-button delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-card">
+                        <div class="vehicle-icon mock-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        
+                        <div class="vehicle-details">
+                            <h3>Weekend Truck</h3>
+                            <p class="license-plate">GP-345-678</p>
+                            <p class="vehicle-info">2020 Truck Blue</p>
+                            
+                            <div class="vulnerability-tags">
+                                <span class="vulnerability-tag wind-tag">
+                                    <i class="fas fa-wind"></i>
+                                    Wind
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="vehicle-actions">
+                            <button class="icon-button edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="icon-button delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty state (hidden when vehicles exist) -->
+                    <div class="no-vehicles" style="display: none;">
+                        <div class="empty-state-icon mock-icon">
+                            <i class="fas fa-car-alt"></i>
+                        </div>
+                        <p>You haven't registered any vehicles yet.</p>
+                        <p>Register a vehicle to receive customized risk alerts.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

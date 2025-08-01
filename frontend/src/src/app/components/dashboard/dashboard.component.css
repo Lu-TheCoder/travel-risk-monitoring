@@ -1,0 +1,397 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #ff3b30;
+  font-size: 28px;
+}
+
+.subtitle {
+  margin: 10px 0 0 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.dashboard-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  flex: 1;
+  background: linear-gradient(135deg, #ff3b30, #ff6b66);
+  color: white;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 15px;
+}
+
+.vehicles-icon {
+  background-image: url('/assets/icons/sedan.svg');
+  filter: brightness(0) invert(1);
+}
+
+.alerts-icon {
+  background-image: url('/assets/icons/alert.svg');
+  filter: brightness(0) invert(1);
+}
+
+.weather-icon {
+  background-image: url('/assets/icons/rain.svg');
+  filter: brightness(0) invert(1);
+}
+
+.stat-content h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.stat-content p {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.dashboard-content {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.dashboard-card {
+  flex: 1;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.card-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.primary-button {
+  padding: 8px 16px;
+  background-color: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s;
+}
+
+.primary-button:hover {
+  background-color: #e6352b;
+}
+
+.vehicle-list, .alert-list {
+  padding: 0 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.vehicle-item, .alert-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.vehicle-item:last-child, .alert-item:last-child {
+  border-bottom: none;
+}
+
+.vehicle-icon, .alert-icon {
+  width: 40px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 15px;
+}
+
+.sedan-icon {
+  background-image: url('/assets/icons/sedan.svg');
+}
+
+.suv-icon {
+  background-image: url('/assets/icons/suv.svg');
+}
+
+.hatchback-icon {
+  background-image: url('/assets/icons/hatchback.svg');
+}
+
+.truck-icon {
+  background-image: url('/assets/icons/truck.svg');
+}
+
+.motorcycle-icon {
+  background-image: url('/assets/icons/motorcycle.svg');
+}
+
+.hail-icon {
+  background-image: url('/assets/icons/hail.svg');
+}
+
+.heavy_rain-icon, .rain-icon {
+  background-image: url('/assets/icons/rain.svg');
+}
+
+.flood-icon {
+  background-image: url('/assets/icons/flood.svg');
+}
+
+.high_wind-icon, .wind-icon {
+  background-image: url('/assets/icons/wind.svg');
+}
+
+.general-icon {
+  background-image: url('/assets/icons/alert.svg');
+}
+
+.vehicle-details, .alert-details {
+  flex: 1;
+}
+
+.vehicle-details h3, .alert-details h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.license-plate {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-family: monospace;
+}
+
+.alert-time {
+  margin: 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.vehicle-actions, .alert-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  color: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px;
+}
+
+.icon-button:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+}
+
+.alert-item {
+  position: relative;
+  border-left: 4px solid #999;
+}
+
+.alert-item.high {
+  border-left-color: #ff3b30;
+}
+
+.alert-item.moderate {
+  border-left-color: #ff9500;
+}
+
+.alert-item.low {
+  border-left-color: #34c759;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.registered-vehicles .empty-icon {
+  background-image: url('/assets/icons/empty-vehicles.svg');
+}
+
+.risk-alerts .empty-icon {
+  background-image: url('/assets/icons/empty-alerts.svg');
+}
+
+.empty-state p {
+  margin: 0 0 15px 0;
+  color: #999;
+  font-size: 16px;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.action-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 10px;
+}
+
+.map-icon {
+  background-image: url('/assets/icons/map.svg');
+}
+
+.vehicle-icon {
+  background-image: url('/assets/icons/sedan.svg');
+}
+
+.alert-icon {
+  background-image: url('/assets/icons/alert.svg');
+}
+
+.action-button span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-stats,
+  .dashboard-content,
+  .dashboard-actions {
+    flex-direction: column;
+  }
+  
+  .stat-card {
+    margin-bottom: 10px;
+  }
+  
+  .dashboard-card {
+    margin-bottom: 20px;
+  }
+}
+
+/* Mock icon styling for Font Awesome icons */
+.mock-icon {
+  background-color: #ff3b30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  border-radius: 4px;
+}
+
+/* Override background images with Font Awesome icons */
+.stat-icon.mock-icon,
+.vehicle-icon.mock-icon,
+.alert-icon.mock-icon,
+.action-icon.mock-icon,
+.empty-icon.mock-icon {
+  background-image: none !important;
+  filter: none !important;
+}
+
+/* Adjust icon sizes */
+.stat-icon.mock-icon {
+  font-size: 24px;
+}
+
+.empty-icon.mock-icon {
+  font-size: 32px;
+  width: 64px;
+  height: 64px;
+  background-color: rgba(255, 59, 48, 0.2);
+  color: rgba(255, 59, 48, 0.8);
+}
+
+.primary-button i {
+  font-size: 14px;
+}

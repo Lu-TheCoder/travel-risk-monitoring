@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerts Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .alerts-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #ff3b30;
+      font-size: 24px;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background-color: transparent;
+      color: #ff3b30;
+      border: 1px solid #ff3b30;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: rgba(255, 59, 48, 0.1);
+    }
+
+    .filters-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-label {
+      font-weight: 500;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filter-buttons button {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #ddd;
+      background-color: white;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-buttons button:hover {
+      border-color: #ff3b30;
+      color: #ff3b30;
+    }
+
+    .filter-buttons button.active {
+      background-color: #ff3b30;
+      color: white;
+      border-color: #ff3b30;
+    }
+
+    .weather-icon {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff3b30;
+    }
+
+    .mock-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff3b30;
+    }
+
+    .clear-all-button {
+      align-self: flex-end;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid #ff3b30;
+      background-color: transparent;
+      color: #ff3b30;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .clear-all-button:hover {
+      background-color: rgba(255, 59, 48, 0.1);
+    }
+
+    .alerts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .alert-card {
+      display: flex;
+      align-items: flex-start;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .alert-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background-color: #999;
+    }
+
+    .alert-card.high::before {
+      background-color: #ff3b30;
+    }
+
+    .alert-card.moderate::before {
+      background-color: #ff9500;
+    }
+
+    .alert-card.low::before {
+      background-color: #34c759;
+    }
+
+    .alert-card.acknowledged {
+      opacity: 0.7;
+    }
+
+    .alert-icon {
+      width: 48px;
+      height: 48px;
+      margin-right: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff3b30;
+      font-size: 24px;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .alert-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .alert-time {
+      font-size: 14px;
+      color: #999;
+      white-space: nowrap;
+      margin-left: 10px;
+    }
+
+    .alert-details {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .alert-location {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .alert-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .alert-level-tag, .alert-type-tag, .alert-status-tag {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .alert-level-tag.high {
+      background-color: rgba(255, 59, 48, 0.1);
+      color: #ff3b30;
+    }
+
+    .alert-level-tag.moderate {
+      background-color: rgba(255, 149, 0, 0.1);
+      color: #ff9500;
+    }
+
+    .alert-level-tag.low {
+      background-color: rgba(52, 199, 89, 0.1);
+      color: #34c759;
+    }
+
+    .alert-type-tag {
+      background-color: rgba(0, 122, 255, 0.1);
+      color: #007aff;
+    }
+
+    .alert-type-tag.hail {
+      background-color: rgba(88, 86, 214, 0.1);
+      color: #5856d6;
+    }
+
+    .alert-type-tag.heavy_rain, .alert-type-tag.flood {
+      background-color: rgba(0, 122, 255, 0.1);
+      color: #007aff;
+    }
+
+    .alert-type-tag.high_wind {
+      background-color: rgba(52, 199, 89, 0.1);
+      color: #34c759;
+    }
+
+    .alert-status-tag {
+      background-color: rgba(142, 142, 147, 0.1);
+      color: #8e8e93;
+    }
+
+    .alert-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-left: 20px;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .icon-button.acknowledge {
+      color: #34c759;
+    }
+
+    .icon-button.acknowledge:hover {
+      background-color: rgba(52, 199, 89, 0.1);
+    }
+
+    .icon-button.view-map {
+      color: #ff3b30;
+    }
+
+    .icon-button.view-map:hover {
+      background-color: rgba(255, 59, 48, 0.1);
+    }
+
+    .icon-button.delete {
+      color: #ff3b30;
+    }
+
+    .icon-button.delete:hover {
+      background-color: rgba(255, 59, 48, 0.1);
+    }
+
+    .no-alerts {
+      text-align: center;
+      padding: 60px 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ff3b30;
+      font-size: 48px;
+    }
+
+    .no-alerts h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 20px;
+    }
+
+    .no-alerts p {
+      margin: 0;
+      color: #666;
+      font-size: 16px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      
+      .alert-card {
+        flex-direction: column;
+      }
+      
+      .alert-icon {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      
+      .alert-header {
+        flex-direction: column;
+      }
+      
+      .alert-time {
+        margin-left: 0;
+        margin-top: 5px;
+      }
+      
+      .alert-actions {
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 15px;
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="alerts-container">
+    <div class="header">
+      <h1>Risk Alerts</h1>
+      <button class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </button>
+    </div>
+
+    <div class="filters-container">
+      <div class="filter-group">
+        <span class="filter-label">Filter by:</span>
+        <div class="filter-buttons">
+          <button class="active">All</button>
+          <button>Unacknowledged</button>
+          <button>High Risk</button>
+          <button>Moderate Risk</button>
+          <button>Low Risk</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">Weather Type:</span>
+        <div class="filter-buttons">
+          <button>
+            <span class="weather-icon mock-icon"><i class="fas fa-snowflake"></i></span> Hail
+          </button>
+          <button>
+            <span class="weather-icon mock-icon"><i class="fas fa-cloud-rain"></i></span> Heavy Rain
+          </button>
+          <button>
+            <span class="weather-icon mock-icon"><i class="fas fa-water"></i></span> Flood
+          </button>
+          <button>
+            <span class="weather-icon mock-icon"><i class="fas fa-wind"></i></span> High Wind
+          </button>
+        </div>
+      </div>
+
+      <button class="clear-all-button">
+        <i class="fas fa-trash-alt"></i> Clear All Alerts
+      </button>
+    </div>
+
+    <div class="alerts-list">
+      <div class="alert-card high">
+        <div class="alert-icon">
+          <i class="fas fa-snowflake"></i>
+        </div>
+        
+        <div class="alert-content">
+          <div class="alert-header">
+            <h3>Hailstorm warning on your route</h3>
+            <span class="alert-time">30 minutes ago</span>
+          </div>
+          
+          <p class="alert-details">Large hail expected in the next 30 minutes. Consider seeking shelter.</p>
+          
+          <div class="alert-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Johannesburg, South Africa</span>
+          </div>
+          
+          <div class="alert-tags">
+            <span class="alert-level-tag high">high</span>
+            <span class="alert-type-tag hail">hail</span>
+          </div>
+        </div>
+        
+        <div class="alert-actions">
+          <button class="icon-button acknowledge" title="Acknowledge Alert">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="icon-button view-map" title="View on Map">
+            <i class="fas fa-map"></i>
+          </button>
+          <button class="icon-button delete" title="Delete Alert">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="alert-card moderate">
+        <div class="alert-icon">
+          <i class="fas fa-cloud-rain"></i>
+        </div>
+        
+        <div class="alert-content">
+          <div class="alert-header">
+            <h3>Heavy rain ahead</h3>
+            <span class="alert-time">1 hour ago</span>
+          </div>
+          
+          <p class="alert-details">Reduced visibility and slippery roads expected.</p>
+          
+          <div class="alert-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Pretoria, South Africa</span>
+          </div>
+          
+          <div class="alert-tags">
+            <span class="alert-level-tag moderate">moderate</span>
+            <span class="alert-type-tag heavy_rain">heavy rain</span>
+          </div>
+        </div>
+        
+        <div class="alert-actions">
+          <button class="icon-button acknowledge" title="Acknowledge Alert">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="icon-button view-map" title="View on Map">
+            <i class="fas fa-map"></i>
+          </button>
+          <button class="icon-button delete" title="Delete Alert">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="alert-card low">
+        <div class="alert-icon">
+          <i class="fas fa-wind"></i>
+        </div>
+        
+        <div class="alert-content">
+          <div class="alert-header">
+            <h3>High winds in your area</h3>
+            <span class="alert-time">2 hours ago</span>
+          </div>
+          
+          <p class="alert-details">Wind gusts up to 30km/h expected.</p>
+          
+          <div class="alert-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Cape Town, South Africa</span>
+          </div>
+          
+          <div class="alert-tags">
+            <span class="alert-level-tag low">low</span>
+            <span class="alert-type-tag high_wind">high wind</span>
+          </div>
+        </div>
+        
+        <div class="alert-actions">
+          <button class="icon-button acknowledge" title="Acknowledge Alert">
+            <i class="fas fa-check"></i>
+          </button>
+          <button class="icon-button view-map" title="View on Map">
+            <i class="fas fa-map"></i>
+          </button>
+          <button class="icon-button delete" title="Delete Alert">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state example (hidden by default) -->
+    <div class="no-alerts" style="display: none;">
+      <div class="empty-state-icon mock-icon">
+        <i class="fas fa-bell-slash"></i>
+      </div>
+      <h3>No alerts found</h3>
+      <p>Try changing your filter settings</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<div class="map-container">
+  <div class="map-header">
+    <h1>Travel Risk Map</h1>
+    <div class="map-controls">
+      <button class="control-button" (click)="startNewRoute()">Start New Route</button>
+      <button class="control-button" (click)="clearRoute()">Clear Route</button>
+    </div>
+  </div>
+  
+  <div class="map-wrapper">
+    <div id="map" class="map"></div>
+    
+    <div class="legend">
+      <h3>Weather Hazards</h3>
+      <div class="legend-item">
+        <div class="legend-icon hail-icon"></div>
+        <span>Hailstorm</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-icon rain-icon"></div>
+        <span>Heavy Rain</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-icon flood-icon"></div>
+        <span>Flooding</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-icon wind-icon"></div>
+        <span>High Winds</span>
+      </div>
+      
+      <h3>Risk Levels</h3>
+      <div class="legend-item">
+        <div class="risk-indicator high"></div>
+        <span>High Risk</span>
+      </div>
+      <div class="legend-item">
+        <div class="risk-indicator moderate"></div>
+        <span>Moderate Risk</span>
+      </div>
+      <div class="legend-item">
+        <div class="risk-indicator low"></div>
+        <span>Low Risk</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="route-info-panel" *ngIf="currentRoute">
+    <h3>Current Route</h3>
+    <div class="route-stats">
+      <div class="stat">
+        <span class="stat-label">Distance:</span>
+        <span class="stat-value">{{ routeDistance }} km</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Duration:</span>
+        <span class="stat-value">{{ routeDuration }} min</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Risk Score:</span>
+        <span class="stat-value risk-score" [ngClass]="getRiskClass(routeRiskScore)">{{ routeRiskScore }}</span>
+      </div>
+    </div>
+    
+    <div class="hazard-summary" *ngIf="routeHazards.length > 0">
+      <h4>Hazards on Route</h4>
+      <ul class="hazard-list">
+        <li *ngFor="let hazard of routeHazards" class="hazard-item severity-{{ hazard.severity }}">
+          {{ hazard.description }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

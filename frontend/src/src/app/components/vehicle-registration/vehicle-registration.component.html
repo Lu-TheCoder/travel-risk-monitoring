@@ -1,0 +1,136 @@
+<link rel="stylesheet" href="vehicle-registration.component.css">
+<div class="vehicle-registration-container">
+  <div class="header">
+    <h1>{{ isEditMode ? 'Edit Vehicle' : 'Register New Vehicle' }}</h1>
+    <button class="back-button" (click)="goToDashboard()">
+      <i class="fas fa-arrow-left"></i>
+      Back to Dashboard
+    </button>
+  </div>
+  
+  <div class="content-wrapper">
+    <div class="form-container">
+      <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="name">Vehicle Name</label>
+          <input type="text" id="name" formControlName="name" placeholder="e.g. My Family Car">
+          <div class="error-message" *ngIf="isInvalidAndTouched('name')">
+            Vehicle name is required
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="licensePlate">License Plate</label>
+          <input type="text" id="licensePlate" formControlName="licensePlate" placeholder="e.g. ABC123GP">
+          <div class="error-message" *ngIf="isInvalidAndTouched('licensePlate')">
+            License plate is required
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="type">Vehicle Type</label>
+            <select id="type" formControlName="type">
+              <option *ngFor="let type of vehicleTypes" [value]="type.value">{{ type.label }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group half-width">
+            <label for="year">Year</label>
+            <input type="number" id="year" formControlName="year" placeholder="e.g. 2020">
+            <div class="error-message" *ngIf="isInvalidAndTouched('year')">
+              Valid year is required
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="color">Color</label>
+          <input type="text" id="color" formControlName="color" placeholder="e.g. Silver">
+        </div>
+        
+        <div class="form-group">
+          <label>Vehicle Vulnerabilities</label>
+          <p class="help-text">Select vulnerabilities to receive customized alerts</p>
+          
+          <div class="vulnerability-options">
+            <div *ngFor="let vulnerability of vulnerabilities" 
+                 class="vulnerability-option" 
+                 [class.selected]="isVulnerabilitySelected(vulnerability.value)"
+                 (click)="toggleVulnerability(vulnerability.value)">
+              <div class="vulnerability-icon mock-icon">
+                <i class="fas" [ngClass]="{
+                  'fa-snowflake': vulnerability.value === 'hail',
+                  'fa-water': vulnerability.value === 'flood',
+                  'fa-wind': vulnerability.value === 'wind'
+                }"></i>
+              </div>
+              <span>{{ vulnerability.label }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="secondary-button" (click)="resetForm()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button type="submit" class="primary-button">
+            <i class="fas" [ngClass]="isEditMode ? 'fa-save' : 'fa-plus'"></i> {{ isEditMode ? 'Update Vehicle' : 'Register Vehicle' }}
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="vehicles-list">
+      <h2>Your Vehicles</h2>
+      
+      <div class="vehicle-cards">
+        <div *ngFor="let vehicle of registeredVehicles" class="vehicle-card">
+          <div class="vehicle-icon mock-icon">
+            <i class="fas" [ngClass]="{
+              'fa-car': vehicle.type === 'sedan',
+              'fa-truck': vehicle.type === 'truck',
+              'fa-motorcycle': vehicle.type === 'motorcycle',
+              'fa-car-side': vehicle.type === 'hatchback',
+              'fa-shuttle-van': vehicle.type === 'suv'
+            }"></i>
+          </div>
+          
+          <div class="vehicle-details">
+            <h3>{{ vehicle.name }}</h3>
+            <p class="license-plate">{{ vehicle.licensePlate }}</p>
+            <p class="vehicle-info">{{ vehicle.year }} {{ vehicle.type | titlecase }} {{ vehicle.color ? '• ' + vehicle.color : '' }}</p>
+            
+            <div class="vulnerability-tags" *ngIf="vehicle.vulnerabilities && vehicle.vulnerabilities.length > 0">
+              <span *ngFor="let vulnerability of vehicle.vulnerabilities" class="vulnerability-tag {{ vulnerability }}-tag">
+                <i class="fas" [ngClass]="{
+                  'fa-snowflake': vulnerability === 'hail',
+                  'fa-water': vulnerability === 'flood',
+                  'fa-wind': vulnerability === 'wind'
+                }"></i>
+                {{ vulnerability | titlecase }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="vehicle-actions">
+            <button class="icon-button edit" (click)="editVehicle(vehicle)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="icon-button delete" (click)="deleteVehicle(vehicle.id)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div *ngIf="registeredVehicles.length === 0" class="no-vehicles">
+          <div class="empty-state-icon mock-icon">
+            <i class="fas fa-car-alt"></i>
+          </div>
+          <p>You haven't registered any vehicles yet.</p>
+          <p>Register a vehicle to receive customized risk alerts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,128 @@
+<link rel="stylesheet" href="dashboard.component.css">
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Travel Risk Dashboard</h1>
+    <p class="subtitle">Monitor your vehicles and weather risks in real-time</p>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-icon vehicles-icon mock-icon"><i class="fas fa-car"></i></div>
+      <div class="stat-content">
+        <h3>{{ registeredVehicles.length }}</h3>
+        <p>Registered Vehicles</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon alerts-icon mock-icon"><i class="fas fa-bell"></i></div>
+      <div class="stat-content">
+        <h3>{{ riskAlerts.length }}</h3>
+        <p>Active Alerts</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon weather-icon mock-icon"><i class="fas fa-cloud-rain"></i></div>
+      <div class="stat-content">
+        <h3>South Africa</h3>
+        <p>Current Region</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <section class="dashboard-card registered-vehicles">
+      <div class="card-header">
+        <h2>My Vehicles</h2>
+        <button class="primary-button" (click)="navigateToVehicleRegistration()">
+          <i class="fas fa-plus"></i> Add Vehicle
+        </button>
+      </div>
+      
+      <div class="vehicle-list" *ngIf="registeredVehicles.length > 0">
+        <div class="vehicle-item" *ngFor="let vehicle of registeredVehicles">
+          <div class="vehicle-icon mock-icon">
+            <i class="fas" [ngClass]="{
+              'fa-car': vehicle.type === 'sedan',
+              'fa-truck': vehicle.type === 'truck',
+              'fa-motorcycle': vehicle.type === 'motorcycle',
+              'fa-car-side': vehicle.type === 'hatchback',
+              'fa-shuttle-van': vehicle.type === 'suv'
+            }"></i>
+          </div>
+          <div class="vehicle-details">
+            <h3>{{ vehicle.name }}</h3>
+            <p class="license-plate">{{ vehicle.licensePlate }}</p>
+          </div>
+          <div class="vehicle-actions">
+            <button class="icon-button" (click)="navigateToVehicleRegistration()">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="empty-state" *ngIf="registeredVehicles.length === 0">
+        <div class="empty-icon mock-icon"><i class="fas fa-car-alt"></i></div>
+        <p>No vehicles registered yet</p>
+        <button class="primary-button" (click)="navigateToVehicleRegistration()">
+          <i class="fas fa-car-alt"></i> Register Your First Vehicle
+        </button>
+      </div>
+    </section>
+
+    <section class="dashboard-card risk-alerts">
+      <div class="card-header">
+        <h2>Risk Alerts</h2>
+        <button class="primary-button" (click)="navigateToRiskAlerts()">
+          <i class="fas fa-bell"></i> View All
+        </button>
+      </div>
+      
+      <div class="alert-list" *ngIf="riskAlerts.length > 0">
+        <div class="alert-item" *ngFor="let alert of riskAlerts" [ngClass]="alert.level">
+          <div class="alert-icon mock-icon">
+            <i class="fas" [ngClass]="{
+              'fa-cloud-showers-heavy': alert.type === 'heavy_rain' || alert.type === 'rain',
+              'fa-wind': alert.type === 'high_wind' || alert.type === 'wind',
+              'fa-water': alert.type === 'flood',
+              'fa-snowflake': alert.type === 'hail',
+              'fa-exclamation-triangle': alert.type === 'general'
+            }"></i>
+          </div>
+          <div class="alert-details">
+            <h3>{{ alert.message }}</h3>
+            <p class="alert-time">{{ alert.date | date:'short' }}</p>
+          </div>
+          <div class="alert-actions">
+            <button class="icon-button" (click)="navigateToRiskAlerts()">
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="empty-state" *ngIf="riskAlerts.length === 0">
+        <div class="empty-icon mock-icon"><i class="fas fa-bell-slash"></i></div>
+        <p>No active alerts at the moment</p>
+        <button class="primary-button" (click)="navigateToMap()">
+          <i class="fas fa-map-marked-alt"></i> Check Your Route
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="dashboard-actions">
+    <button class="action-button" (click)="navigateToMap()">
+      <div class="action-icon map-icon mock-icon"><i class="fas fa-map-marked-alt"></i></div>
+      <span>Travel Map</span>
+    </button>
+    <button class="action-button" (click)="navigateToVehicleRegistration()">
+      <div class="action-icon vehicle-icon mock-icon"><i class="fas fa-car"></i></div>
+      <span>Manage Vehicles</span>
+    </button>
+    <button class="action-button" (click)="navigateToRiskAlerts()">
+      <div class="action-icon alert-icon mock-icon"><i class="fas fa-bell"></i></div>
+      <span>View Alerts</span>
+    </button>
+  </div>
+</div>

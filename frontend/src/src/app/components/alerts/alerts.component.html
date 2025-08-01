@@ -1,0 +1,119 @@
+<link rel="stylesheet" href="alerts.component.css">
+<div class="alerts-container">
+  <div class="header">
+    <h1>Risk Alerts</h1>
+    <button class="back-button" (click)="goToDashboard()">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+  </div>
+
+  <div class="filters-container">
+    <div class="filter-group">
+      <span class="filter-label">Filter by:</span>
+      <div class="filter-buttons">
+        <button 
+          [class.active]="activeFilter === 'all'"
+          (click)="applyFilter('all')">All</button>
+        <button 
+          [class.active]="activeFilter === 'unacknowledged'"
+          (click)="applyFilter('unacknowledged')">Unacknowledged</button>
+        <button 
+          [class.active]="activeFilter === 'high'"
+          (click)="applyFilter('high')">High Risk</button>
+        <button 
+          [class.active]="activeFilter === 'moderate'"
+          (click)="applyFilter('moderate')">Moderate Risk</button>
+        <button 
+          [class.active]="activeFilter === 'low'"
+          (click)="applyFilter('low')">Low Risk</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Weather Type:</span>
+      <div class="filter-buttons">
+        <button 
+          [class.active]="activeFilter === 'hail'"
+          (click)="applyFilter('hail')">
+          <span class="weather-icon hail-icon mock-icon"><i class="fas fa-snowflake"></i></span> Hail
+        </button>
+        <button 
+          [class.active]="activeFilter === 'heavy_rain'"
+          (click)="applyFilter('heavy_rain')">
+          <span class="weather-icon rain-icon mock-icon"><i class="fas fa-cloud-rain"></i></span> Heavy Rain
+        </button>
+        <button 
+          [class.active]="activeFilter === 'flood'"
+          (click)="applyFilter('flood')">
+          <span class="weather-icon flood-icon mock-icon"><i class="fas fa-water"></i></span> Flood
+        </button>
+        <button 
+          [class.active]="activeFilter === 'high_wind'"
+          (click)="applyFilter('high_wind')">
+          <span class="weather-icon wind-icon mock-icon"><i class="fas fa-wind"></i></span> High Wind
+        </button>
+      </div>
+    </div>
+
+    <button class="clear-all-button" (click)="clearAllAlerts()" *ngIf="alerts.length > 0">
+      <i class="fas fa-trash-alt"></i> Clear All Alerts
+    </button>
+  </div>
+
+  <div class="alerts-list" *ngIf="filteredAlerts.length > 0">
+    <div class="alert-card" 
+         *ngFor="let alert of filteredAlerts"
+         [class.high]="alert.level === 'high'"
+         [class.moderate]="alert.level === 'moderate'"
+         [class.low]="alert.level === 'low'"
+         [class.acknowledged]="alert.acknowledged"
+         (click)="viewOnMap(alert)">
+      
+      <div class="alert-icon" [ngClass]="alertIcons[alert.type]">
+        <i class="fas" [ngClass]="{
+          'fa-snowflake': alert.type === 'hail',
+          'fa-cloud-rain': alert.type === 'heavy_rain',
+          'fa-water': alert.type === 'flood',
+          'fa-wind': alert.type === 'high_wind',
+          'fa-exclamation-circle': alert.type === 'general'
+        }"></i>
+      </div>
+      
+      <div class="alert-content">
+        <div class="alert-header">
+          <span class="alert-summary">
+            Weather risk detected on your route. Please check the map for details.
+          </span>
+        </div>
+        <!-- Details, location, tags removed -->
+      </div>
+      
+      <div class="alert-actions">
+        <button class="icon-button acknowledge" 
+                *ngIf="!alert.acknowledged"
+                (click)="acknowledgeAlert(alert.id, $event)" 
+                title="Acknowledge Alert">
+          <i class="fas fa-check"></i>
+        </button>
+        <button class="icon-button view-map" 
+                title="View on Map">
+          <i class="fas fa-map"></i>
+        </button>
+        <button class="icon-button delete" 
+                (click)="deleteAlert(alert.id, $event)"
+                title="Delete Alert">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-alerts" *ngIf="filteredAlerts.length === 0">
+    <div class="empty-state-icon mock-icon">
+      <i class="fas fa-bell-slash"></i>
+    </div>
+    <h3>No alerts found</h3>
+    <p *ngIf="activeFilter !== 'all'">Try changing your filter settings</p>
+    <p *ngIf="activeFilter === 'all' && alerts.length === 0">You're all clear! No risk alerts at the moment.</p>
+  </div>
+</div>
