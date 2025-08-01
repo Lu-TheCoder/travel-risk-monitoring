@@ -47,6 +47,12 @@ frontend/typings
 frontend/.DS_Store
 frontend/Thumbs.db
 
+# Database
+Database/node_modules
+Database/npm-debug.log
+Database/yarn-error.log
+Database/package-lock.json
 
 #backend
 backend/.env
+
