@@ -1,0 +1,34 @@
+services:
+  postgres:
+    build:
+      context: ./database
+      dockerfile: Database.Dockerfile
+    container_name: travel-risk-postgres
+    environment:
+      POSTGRES_DB: travel-risk-postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  postgres-test:
+    build:
+      context: ./database
+      dockerfile: Database.Dockerfile
+    container_name: travel-risk-postgres-test
+    environment:
+      POSTGRES_DB: travel-risk-postgres-test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  postgres_test_data:

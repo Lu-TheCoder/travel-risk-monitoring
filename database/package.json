@@ -1,0 +1,20 @@
+{
+  "name": "database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "node src/migrations.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate:up": "node src/migrations.js up",
+    "migrate:down": "node src/migrations.js down",
+    "migrate:generate": "node src/migrations.js generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "fs-extra": "^11.3.0",
+    "pg": "^8.16.3"
+  }
+}
