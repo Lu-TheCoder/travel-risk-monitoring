@@ -5,6 +5,9 @@ import { Risk } from './dashboard/risk/risk';
 import { Routes as RoutesComponent } from './dashboard/routes/routes';
 import { Vehicles } from './dashboard/vehicles/vehicles';
 import { Rewards } from './dashboard/rewards/rewards';
+import { Signup } from './pages/auth/signup/signup';
+import { Login } from './pages/auth/login/login';
+
 
 export const routes: Routes = [
 
@@ -38,5 +41,14 @@ export const routes: Routes = [
                 component: Rewards
             }
         ]
+    },
+    {
+      path: 'signup',
+      component: Signup,
+    },
+    {
+      path: 'login',
+      canDeactivate: [],
+      component: Login,
     }
 ];
