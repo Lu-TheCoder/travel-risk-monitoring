@@ -8,8 +8,13 @@ const VehicleRouter = Router();
 //GET METHODS FOR USER VEHICLES 
 VehicleRouter.get('/', async (req, res) =>{
     try {
+
+        // YOU MIGHT WANNA ENSURE THAT THIS IS NOT NULL,
+        // INCASE MIDDLEWARE DIDNT ACCOUNT FOR IT BEING NULL..
         const userId = req.user.id;
 
+        // I'D PROLLY DO A SANITY CHECK HERE..
+        
         const allVehicles = await getAllVehicles(userId);
         if(!(allVehicles.lenght > 0)){
             noContent(res);
