@@ -17,8 +17,7 @@
 <main class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
   <!-- Community Form -->
   <form
-    action=""
-    method="post"
+    (ngSubmit)="onSubmit($event)"
     class="bg-white rounded-2xl shadow p-6 flex flex-col gap-4"
   >
     <h2 class="text-xl font-bold mb-2 text-red-500">Report an Incident</h2>
@@ -27,6 +26,7 @@
       <input
         type="text"
         name="title"
+        [(ngModel)]="formData.title"
         class="w-full border border-gray-600 rounded-xl p-2 mt-1"
         required
       />
@@ -35,6 +35,7 @@
       >Description
       <textarea
         name="description"
+        [(ngModel)]="formData.description"
         class="w-full border rounded p-2 mt-1"
         rows="3"
         required
@@ -51,15 +52,73 @@
         [value]="selectedLocation"
       />
     </label>
+    <label
+      >Risk Level
+      <select
+        name="riskLevel"
+        [(ngModel)]="formData.riskLevel"
+        class="w-full border rounded p-2 mt-1"
+        required
+      >
+        <option value="">Select risk level</option>
+        <option value="low">Low Risk</option>
+        <option value="medium">Medium Risk</option>
+        <option value="high">High Risk</option>
+      </select>
+    </label>
+    <!-- Status Message -->
+    <div *ngIf="submitMessage" 
+         class="p-3 rounded-lg text-sm"
+         [class]="submitMessage.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+      {{ submitMessage }}
+    </div>
+
+    <!-- Risk Points Summary -->
+    <div *ngIf="riskPoints.length > 0" class="bg-blue-50 p-3 rounded-lg">
+      <div class="flex justify-between items-center mb-2">
+        <div class="text-sm font-medium text-blue-800">
+          Marked Locations ({{ riskPoints.length }})
+        </div>
+        <button 
+          type="button"
+          (click)="clearAllPoints()"
+          class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+        >
+          Clear All
+        </button>
+      </div>
+      <div class="text-xs text-blue-600 space-y-1">
+        <div *ngFor="let point of riskPoints; let i = index">
+          {{ i + 1 }}. {{ point.lat.toFixed(6) }}, {{ point.lng.toFixed(6) }} 
+          <span class="text-xs px-2 py-1 rounded"
+                [class]="point.riskLevel === 'low' ? 'bg-green-200 text-green-800' : 
+                         point.riskLevel === 'medium' ? 'bg-orange-200 text-orange-800' : 
+                         'bg-red-200 text-red-800'">
+            {{ point.riskLevel }}
+          </span>
+        </div>
+      </div>
+    </div>
+
     <button
       type="submit"
-      class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full mt-2"
+      [disabled]="isSubmitting"
+      class="bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-full mt-2 flex items-center justify-center"
     >
-      Submit
+      <span *ngIf="isSubmitting" class="mr-2">
+        <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+      {{ isSubmitting ? 'Submitting...' : 'Submit Report' }}
     </button>
   </form>
 
-  <div class="relative h-64">
-    <app-map></app-map>
+  <div class="relative h-96">
+    <app-community-map 
+      (locationSelected)="onMapClick($event)"
+      (riskPointsChange)="onRiskPointsChange($event)">
+    </app-community-map>
   </div>
 </main>
