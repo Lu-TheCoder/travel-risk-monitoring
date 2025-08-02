@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { initTripPlannerMap, calculateRoute, updateMapWithRoute, clearMapRoute, initAutocomplete, startRouteSimulation } from './trip-planner.lib';
 import { WeatherService } from '../../services/weather/weather.service';
+import { LucideAngularModule, MapPlus, MapPinPlus } from 'lucide-angular';
 
 export interface TripLocation {
   address: string;
@@ -22,7 +23,7 @@ export interface TripRoute {
 @Component({
   selector: 'app-trip-planner',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './trip-planner.component.html',
   styleUrls: ['./trip-planner.component.css']
 })
@@ -30,6 +31,9 @@ export class TripPlannerComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
   @ViewChild('startLocationInput', { static: true }) startLocationInput!: ElementRef;
   @ViewChild('endLocationInput', { static: true }) endLocationInput!: ElementRef;
+
+  readonly MapPlus = MapPlus;
+  readonly MapPinPlus = MapPinPlus;
   
   isLoading = false;
   error: string | null = null;

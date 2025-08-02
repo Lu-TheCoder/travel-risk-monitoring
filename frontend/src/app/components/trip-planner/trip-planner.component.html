@@ -1,7 +1,10 @@
 <div class="trip-planner-container">
   <!-- Header -->
   <div class="trip-planner-header">
-    <h2>🚗 Trip Planner</h2>
+   <div class="flex flex-row items-center gap-2">
+    <lucide-icon [img]="MapPlus" class="w-6 h-6" />
+    <h2>Trip Planner</h2>
+   </div>
     <p>Plan your journey with real-time weather information</p>
   </div>
 
@@ -45,6 +48,7 @@
         [disabled]="isLoading"
         class="btn btn-primary"
       >
+        <lucide-icon [img]="MapPinPlus" class="w-4 h-4" />
         <span *ngIf="isLoading" class="loading-spinner"></span>
         {{ isLoading ? 'Calculating...' : 'Calculate Route' }}
       </button>
@@ -132,7 +136,7 @@
   </div>
 
   <!-- Map Container -->
-  <div class="map-container">
+  <div class="map-container mb-10">
     <div #mapContainer class="map"></div>
     
     <!-- Loading Overlay -->

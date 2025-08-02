@@ -419,7 +419,7 @@ export class HotSpotGenerator {
       </div>
     `;
     
-    this.map.getDiv().appendChild(controlsDiv);
+    // this.map.getDiv().appendChild(controlsDiv);
 
     // Add event listeners
     document.getElementById('generateHotspots')?.addEventListener('click', () => {
