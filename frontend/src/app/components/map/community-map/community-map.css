@@ -1,0 +1,58 @@
+.map-container {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  position: relative;
+}
+
+.risk-marker {
+  background: #ff6b6b;
+  border: 2px solid #ff4757;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.risk-marker.low {
+  background: #4CAF50;
+  border-color: #2E7D32;
+}
+
+.risk-marker.medium {
+  background: #FF9800;
+  border-color: #E65100;
+}
+
+.risk-marker.high {
+  background: #F44336;
+  border-color: #B71C1C;
+}
+
+.geofence-circle {
+  fill-opacity: 0.1;
+  stroke-opacity: 0.8;
+  stroke-width: 2;
+}
+
+.geofence-circle.low {
+  fill: #4CAF50;
+  stroke: #2E7D32;
+}
+
+.geofence-circle.medium {
+  fill: #FF9800;
+  stroke: #E65100;
+}
+
+.geofence-circle.high {
+  fill: #F44336;
+  stroke: #B71C1C;
+} 
