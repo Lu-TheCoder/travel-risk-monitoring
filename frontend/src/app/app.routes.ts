@@ -7,6 +7,7 @@ import { Vehicles } from './dashboard/vehicles/vehicles';
 import { Rewards } from './dashboard/rewards/rewards';
 import { Signup } from './pages/auth/signup/signup';
 import { Login } from './pages/auth/login/login';
+import { TripPlannerComponent } from './components/trip-planner/trip-planner.component';
 
 
 export const routes: Routes = [
@@ -39,6 +40,10 @@ export const routes: Routes = [
             {
                 path: "rewards",
                 component: Rewards
+            },
+            {
+                path: 'trip-planner',
+                component: TripPlannerComponent,
             }
         ]
     },
