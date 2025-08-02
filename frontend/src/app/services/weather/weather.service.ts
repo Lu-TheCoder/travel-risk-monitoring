@@ -49,13 +49,12 @@ export interface WeatherData {
   providedIn: 'root'
 })
 export class WeatherService {
-  private readonly apiKey = environment.openWeatherMapApiKey;
-  private readonly baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+  private readonly baseUrl = `${environment.backendUrl}/api/weather`;
 
   constructor(private http: HttpClient) {}
 
   getWeatherData(lat: number, lon: number): Observable<WeatherData> {
-    const url = `${this.baseUrl}?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+    const url = `${this.baseUrl}/current?lat=${lat}&lon=${lon}`;
     return this.http.get<WeatherData>(url);
   }
 
