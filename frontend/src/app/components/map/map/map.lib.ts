@@ -34,11 +34,11 @@ export async function initMap(container: HTMLElement) {
   const geoJsonLoader = new GeoJSONLoader();
   let routePoints: RoutePoint[] = [];
   let mapCenter = { lat: -25.854361, lng: 28.192019 }; // Default center
-  
+
   try {
     const geoJson = await geoJsonLoader.loadFromUrl('/assets/map/momentum_parameter_walk.geojson');
     const lineStringCoords = geoJsonLoader.getFirstLineStringCoordinates();
-    
+
     // Convert GeoJSON coordinates to RoutePoints with timestamps
     routePoints = lineStringCoords.map((coord, index) => ({
       lat: coord.lat,
@@ -46,12 +46,12 @@ export async function initMap(container: HTMLElement) {
       timestamp: index * 1000, // 1 second intervals
       speed: 30 + (index * 5) // Gradually increasing speed
     }));
-    
+
     // Set map center to first point of the route
     if (routePoints.length > 0) {
       mapCenter = { lat: routePoints[0].lat, lng: routePoints[0].lng };
     }
-    
+
     console.log('Loaded route from GeoJSON:', routePoints.length, 'points');
   } catch (error) {
     console.error('Failed to load GeoJSON route, using fallback:', error);
@@ -114,11 +114,11 @@ export async function initMap(container: HTMLElement) {
   // Route simulation functions
   function startSimulation() {
     if (simulationState.isRunning) return;
-    
+
     simulationState.isRunning = true;
     simulationState.currentIndex = 0;
     simulationState.startTime = Date.now();
-    
+
     console.log('Starting route simulation...');
     updateSimulation();
   }
@@ -165,13 +165,13 @@ export async function initMap(container: HTMLElement) {
     if (simulationState.vehicleMarker) {
       const newPosition = { lat: interpolatedLat, lng: interpolatedLng };
       simulationState.vehicleMarker.setPosition(newPosition);
-      
+
       // Calculate heading for vehicle orientation
       const heading = google.maps.geometry.spherical.computeHeading(
         new google.maps.LatLng(currentPoint.lat, currentPoint.lng),
         new google.maps.LatLng(nextPoint.lat, nextPoint.lng)
       );
-      
+
       simulationState.vehicleMarker.setIcon({
         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
         scale: 6,
@@ -223,7 +223,7 @@ export async function initMap(container: HTMLElement) {
   map.addListener('center_changed', updateCenterDisplay);
   map.addListener('zoom_changed', updateCenterDisplay);
   map.addListener('bounds_changed', updateCenterDisplay);
-  
+
   // Initial display
   updateCenterDisplay();
 
@@ -241,7 +241,7 @@ export async function initMap(container: HTMLElement) {
     font-size: 12px;
     z-index: 1000;
   `;
-  
+
   controlsDiv.innerHTML = `
     <div style="margin-bottom: 8px;">
       <button id="startSim" style="margin-right: 5px; padding: 4px 8px;">Start</button>
@@ -254,17 +254,17 @@ export async function initMap(container: HTMLElement) {
       <span id="speedValue">1x</span>
     </div>
   `;
-  
+
   container.appendChild(controlsDiv);
 
   // Add event listeners to controls
   document.getElementById('startSim')?.addEventListener('click', startSimulation);
   document.getElementById('stopSim')?.addEventListener('click', stopSimulation);
   document.getElementById('resetSim')?.addEventListener('click', resetSimulation);
-  
+
   const speedSlider = document.getElementById('speedSlider') as HTMLInputElement;
   const speedValue = document.getElementById('speedValue');
-  
+
   speedSlider?.addEventListener('input', (e) => {
     const value = parseFloat((e.target as HTMLInputElement).value);
     simulationState.speedMultiplier = value;
