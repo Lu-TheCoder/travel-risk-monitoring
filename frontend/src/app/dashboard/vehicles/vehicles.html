@@ -1,4 +1,81 @@
-<div class="p-6">
+<div class="p-6 h-screen flex flex-col">
   <h1 class="text-2xl font-bold text-green-600 mb-4">My Vehicles</h1>
   <p class="text-gray-600">Your vehicle management and tracking will appear here.</p>
+  <div class="h-full flex flex-row gap-10">
+    <div class="shadow shadow-gray-300 w-1/2 rounded-lg p-7">
+      <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit($event)">
+      <fieldset class="flex flex-col gap-1 mt-2 animate-up">
+          <label for="brand" class="text-sm sm:text-base text-[#1e1e1e]">Car Brand:</label>
+          <input
+            id="brand"
+            type="brand"
+            placeholder="Car Brand"
+            formControlName="brand"
+            class="border p-2 rounded-md border-[#cacaca] placeholder:text-[#c8c8c8] focus:outline-1 focus:outline-red-500 focus:border-transparent"/>
+          <div *ngIf="vehicleForm.get('brand')?.invalid && vehicleForm.get('brand')?.touched" class="text-red-500 text-xs mt-1" [@fadeInOut]>
+            <div *ngIf="vehicleForm.get('brand')?.errors?.['required']">Car brand is required.</div>
+          </div>
+      </fieldset>
+      <fieldset class="flex flex-col gap-1 mt-2 animate-up">
+          <label for="Model" class="text-sm sm:text-base text-[#1e1e1e]">Car Model:</label>
+          <input
+            id="model"
+            type="model"
+            placeholder="Car model"
+            formControlName="model"
+            class="border p-2 rounded-md border-[#cacaca] placeholder:text-[#c8c8c8] focus:outline-1 focus:outline-red-500 focus:border-transparent"/>
+          <div *ngIf="vehicleForm.get('model')?.invalid && vehicleForm.get('model')?.touched" class="text-red-500 text-xs mt-1" [@fadeInOut]>
+            <div *ngIf="vehicleForm.get('model')?.errors?.['required']">Car model is required.</div>
+          </div>
+      </fieldset>
+      <fieldset class="flex flex-col gap-1 mt-2 animate-up">
+          <label for="year" class="text-sm sm:text-base text-[#1e1e1e]">Year:</label>
+          <input
+            id="year"
+            type="year"
+            placeholder="Year"
+            formControlName="year"
+            class="border p-2 rounded-md border-[#cacaca] placeholder:text-[#c8c8c8] focus:outline-1 focus:outline-red-500 focus:border-transparent"/>
+          <div *ngIf="vehicleForm.get('year')?.invalid && vehicleForm.get('year')?.touched" class="text-red-500 text-xs mt-1" [@fadeInOut]>
+            <div *ngIf="vehicleForm.get('year')?.errors?.['required']">Year is required.</div>
+          </div>
+      </fieldset>
+      <fieldset class="flex flex-col gap-1 mt-2 animate-up">
+          <label for="type" class="text-sm sm:text-base text-[#1e1e1e]">Car Type:</label>
+          <input
+            id="type"
+            type="type"
+            placeholder="Car Type"
+            formControlName="type"
+            class="border p-2 rounded-md border-[#cacaca] placeholder:text-[#c8c8c8] focus:outline-1 focus:outline-red-500 focus:border-transparent"/>
+          <div *ngIf="vehicleForm.get('type')?.invalid && vehicleForm.get('type')?.touched" class="text-red-500 text-xs mt-1" [@fadeInOut]>
+            <div *ngIf="vehicleForm.get('type')?.errors?.['required']">Car type is required.</div>
+          </div>
+      </fieldset>
+        <button class="rounded-md p-2 text-white bg-red-600 font-semibold mt-5">Submit</button>
+      </form>
+    </div>
+    <div class="shadow shadow-gray-300 w-1/2 rounded-lg p-7">
+      <h1 class="font-bold text-xl mb-5"> Your Vehicles </h1>
+      @for(vehicle of vehicles; track $index) {
+        <div class="flex flex-row">
+           <!-- Icon here  -->
+
+          <!-- Vehicle data here -->
+          <div class="flex flex-col shadow shadow-grey-600 w-full rounded-sm mb-4 p-5 gap-1">
+            <p class="font-semibold text-lg">
+              {{vehicle.brand}}
+            </p>
+            <p class="font-semibold text-sm">
+              {{vehicle.model}}
+            </p>
+            <p class="font-light text-sm">
+              <span>{{vehicle.year}}</span>
+              <span>{{vehicle.type}}</span>
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
 </div>
