@@ -22,11 +22,11 @@ export async function initMap(container: HTMLElement, weatherService?: WeatherSe
   const geoJsonLoader = new GeoJSONLoader();
   let routePoints: RoutePoint[] = [];
   let mapCenter = { lat: -25.854361, lng: 28.192019 }; // Default center
-  
+
   try {
     const geoJson = await geoJsonLoader.loadFromUrl('/assets/map/momentum_parameter_walk.geojson');
     const lineStringCoords = geoJsonLoader.getFirstLineStringCoordinates();
-    
+
     // Convert GeoJSON coordinates to RoutePoints with timestamps
     routePoints = lineStringCoords.map((coord, index) => ({
       lat: coord.lat,
@@ -34,12 +34,12 @@ export async function initMap(container: HTMLElement, weatherService?: WeatherSe
       timestamp: index * 1000, // 1 second intervals
       speed: 30 + (index * 5) // Gradually increasing speed
     }));
-    
+
     // Set map center to first point of the route
     if (routePoints.length > 0) {
       mapCenter = { lat: routePoints[0].lat, lng: routePoints[0].lng };
     }
-    
+
     console.log('Loaded route from GeoJSON:', routePoints.length, 'points');
   } catch (error) {
     console.error('Failed to load GeoJSON route, using fallback:', error);
@@ -66,6 +66,123 @@ export async function initMap(container: HTMLElement, weatherService?: WeatherSe
     mapId: environment.googleMapsMapId, // Required for Advanced Markers
   });
 
+
+  // Simulation state
+  const simulationState: SimulationState = {
+    isRunning: false,
+    currentIndex: 0,
+    startTime: 0,
+    speedMultiplier: 1
+  };
+
+  // Create route polyline
+  const routePath = routePoints.map(point => ({ lat: point.lat, lng: point.lng }));
+  simulationState.routePolyline = new google.maps.Polyline({
+    path: routePath,
+    geodesic: true,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 3,
+    map: map
+  });
+
+  // Create vehicle marker
+  simulationState.vehicleMarker = new google.maps.Marker({
+    position: routePoints[0],
+    map: map,
+    title: 'Vehicle',
+    icon: {
+      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      scale: 6,
+      fillColor: '#4285F4',
+      fillOpacity: 1,
+      strokeColor: '#FFFFFF',
+      strokeWeight: 2
+    }
+  });
+
+  // Route simulation functions
+  function startSimulation() {
+    if (simulationState.isRunning) return;
+
+    simulationState.isRunning = true;
+    simulationState.currentIndex = 0;
+    simulationState.startTime = Date.now();
+
+    console.log('Starting route simulation...');
+    updateSimulation();
+  }
+
+  function stopSimulation() {
+    simulationState.isRunning = false;
+    console.log('Route simulation stopped');
+  }
+
+  function resetSimulation() {
+    stopSimulation();
+    simulationState.currentIndex = 0;
+    if (simulationState.vehicleMarker) {
+      simulationState.vehicleMarker.setPosition(routePoints[0]);
+    }
+    console.log('Route simulation reset');
+  }
+
+  function updateSimulation() {
+    if (!simulationState.isRunning) return;
+
+    const currentTime = Date.now() - simulationState.startTime;
+    const adjustedTime = currentTime * simulationState.speedMultiplier;
+
+    // Find current position based on time
+    let currentPoint = routePoints[0];
+    let nextPoint = routePoints[1];
+
+    for (let i = 0; i < routePoints.length - 1; i++) {
+      if (adjustedTime >= routePoints[i].timestamp && adjustedTime < routePoints[i + 1].timestamp) {
+        currentPoint = routePoints[i];
+        nextPoint = routePoints[i + 1];
+        simulationState.currentIndex = i;
+        break;
+      }
+    }
+
+    // Interpolate position between points
+    const progress = (adjustedTime - currentPoint.timestamp) / (nextPoint.timestamp - currentPoint.timestamp);
+    const interpolatedLat = currentPoint.lat + (nextPoint.lat - currentPoint.lat) * progress;
+    const interpolatedLng = currentPoint.lng + (nextPoint.lng - currentPoint.lng) * progress;
+
+    // Update vehicle position
+    if (simulationState.vehicleMarker) {
+      const newPosition = { lat: interpolatedLat, lng: interpolatedLng };
+      simulationState.vehicleMarker.setPosition(newPosition);
+
+      // Calculate heading for vehicle orientation
+      const heading = google.maps.geometry.spherical.computeHeading(
+        new google.maps.LatLng(currentPoint.lat, currentPoint.lng),
+        new google.maps.LatLng(nextPoint.lat, nextPoint.lng)
+      );
+
+      simulationState.vehicleMarker.setIcon({
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale: 6,
+        fillColor: '#4285F4',
+        fillOpacity: 1,
+        strokeColor: '#FFFFFF',
+        strokeWeight: 2,
+        rotation: heading
+      });
+    }
+
+    // Check if simulation is complete
+    if (adjustedTime >= routePoints[routePoints.length - 1].timestamp) {
+      stopSimulation();
+      console.log('Route simulation completed');
+      return;
+    }
+
+    // Continue simulation
+    requestAnimationFrame(updateSimulation);
+
   // Initialize route simulation
   const simulation = new RouteSimulation(map, container, routePoints, AdvancedMarkerElement);
   simulation.initialize();
@@ -78,6 +195,7 @@ export async function initMap(container: HTMLElement, weatherService?: WeatherSe
     await addWeatherMarkers(map, weatherService, routePoints, AdvancedMarkerElement);
   } else {
     console.log('No weather service provided');
+
   }
 
   // Add live center printing (For debugging purposes)
@@ -109,10 +227,54 @@ export async function initMap(container: HTMLElement, weatherService?: WeatherSe
   map.addListener('center_changed', updateCenterDisplay);
   map.addListener('zoom_changed', updateCenterDisplay);
   map.addListener('bounds_changed', updateCenterDisplay);
-  
+
   // Initial display
   updateCenterDisplay();
 
+
+  // Add simulation controls
+  const controlsDiv = document.createElement('div');
+  controlsDiv.style.cssText = `
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    z-index: 1000;
+  `;
+
+  controlsDiv.innerHTML = `
+    <div style="margin-bottom: 8px;">
+      <button id="startSim" style="margin-right: 5px; padding: 4px 8px;">Start</button>
+      <button id="stopSim" style="margin-right: 5px; padding: 4px 8px;">Stop</button>
+      <button id="resetSim" style="padding: 4px 8px;">Reset</button>
+    </div>
+    <div>
+      <label>Speed: </label>
+      <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1" style="width: 80px;">
+      <span id="speedValue">1x</span>
+    </div>
+  `;
+
+  container.appendChild(controlsDiv);
+
+  // Add event listeners to controls
+  document.getElementById('startSim')?.addEventListener('click', startSimulation);
+  document.getElementById('stopSim')?.addEventListener('click', stopSimulation);
+  document.getElementById('resetSim')?.addEventListener('click', resetSimulation);
+
+  const speedSlider = document.getElementById('speedSlider') as HTMLInputElement;
+  const speedValue = document.getElementById('speedValue');
+
+  speedSlider?.addEventListener('input', (e) => {
+    const value = parseFloat((e.target as HTMLInputElement).value);
+    simulationState.speedMultiplier = value;
+    if (speedValue) speedValue.textContent = value + 'x';
+=======
   // Also log to console for debugging
   map.addListener('center_changed', () => {
     const center = map.getCenter();
@@ -321,6 +483,7 @@ function createTestMarker(map: google.maps.Map, lat: number, lng: number, Advanc
     position: { lat, lng },
     content: content,
     title: 'Test Weather Marker - API Failed'
+
   });
 
   const infoWindow = new google.maps.InfoWindow({
@@ -336,6 +499,10 @@ function createTestMarker(map: google.maps.Map, lat: number, lng: number, Advanc
     `
   });
 
+
+  return map;
+}
+
   marker.addListener('click', () => {
     infoWindow.open(map, marker);
   });
@@ -343,3 +510,4 @@ function createTestMarker(map: google.maps.Map, lat: number, lng: number, Advanc
   console.log('Test marker created successfully');
   return marker;
 }
+
