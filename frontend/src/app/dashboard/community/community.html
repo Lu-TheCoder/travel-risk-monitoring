@@ -1,4 +1,65 @@
-<main class="grid-cols-2 ">
-    <form action="" method="post"></form>
-    <app-map-test></app-map-test>
+<div class="flex flex-row items-center justify-between">
+  <div class="flex flex-col gap-2 p-4">
+    <div class="flex flex-row items-center gap-2">
+      <lucide-icon [img]="icon.HandHeart" class="w-8 h-8"></lucide-icon>
+      <h3 class="font-bold text-3xl text-red-500">Community</h3>
+    </div>
+    <p class="text-gray-600 text-sm">
+      Share and view recent community-reported incidents in your area.
+    </p>
+  </div>
+
+  <div class="border border-[#f6cece] bg-[#fff5f5bf] text-[#ff6b6b] mr-4 p-4 flex flex-row items-center gap-2">
+    <lucide-icon [img]="icon.MessageSquareWarning"></lucide-icon>
+    Report Incident
+  </div>
+</div>
+<main class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+  <!-- Community Form -->
+  <form
+    action=""
+    method="post"
+    class="bg-white rounded-2xl shadow p-6 flex flex-col gap-4"
+  >
+    <h2 class="text-xl font-bold mb-2 text-red-500">Report an Incident</h2>
+    <label
+      >Title
+      <input
+        type="text"
+        name="title"
+        class="w-full border border-gray-600 rounded-xl p-2 mt-1"
+        required
+      />
+    </label>
+    <label
+      >Description
+      <textarea
+        name="description"
+        class="w-full border rounded p-2 mt-1"
+        rows="3"
+        required
+      ></textarea>
+    </label>
+    <label
+      >Location
+      <input
+        type="text"
+        name="location"
+        class="w-full border rounded p-2 mt-1"
+        placeholder="Click on the map to select location"
+        readonly
+        [value]="selectedLocation"
+      />
+    </label>
+    <button
+      type="submit"
+      class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full mt-2"
+    >
+      Submit
+    </button>
+  </form>
+
+  <div class="relative h-64">
+    <app-map></app-map>
+  </div>
 </main>
