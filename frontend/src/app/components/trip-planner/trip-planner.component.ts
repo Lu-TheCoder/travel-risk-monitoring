@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { initTripPlannerMap, calculateRoute, updateMapWithRoute, clearMapRoute, initAutocomplete } from './trip-planner.lib';
+import { initTripPlannerMap, calculateRoute, updateMapWithRoute, clearMapRoute, initAutocomplete, startRouteSimulation } from './trip-planner.lib';
 import { WeatherService } from '../../services/weather/weather.service';
 
 export interface TripLocation {
@@ -173,5 +173,13 @@ export class TripPlannerComponent implements OnInit, AfterViewInit {
   onEndLocationInput(event: any) {
     // This will be handled by Google Autocomplete
     console.log('End location input:', event.target.value);
+  }
+
+  async startSimulation() {
+    try {
+      await startRouteSimulation();
+    } catch (error) {
+      console.error('Failed to start simulation:', error);
+    }
   }
 } 

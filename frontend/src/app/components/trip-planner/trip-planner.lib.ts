@@ -3,12 +3,14 @@ import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { WeatherService } from '../../services/weather/weather.service';
 import { TripRoute, TripLocation } from './trip-planner.component';
+import { HotSpotGenerator, HotspotEvent } from './utils/HotSpotGenerator';
 
 let map: google.maps.Map;
 let directionsService: google.maps.DirectionsService;
 let directionsRenderer: google.maps.DirectionsRenderer;
 let geocoder: google.maps.Geocoder;
 let weatherService: WeatherService;
+let hotspotGenerator: HotSpotGenerator;
 
 // Global variables for route management
 let currentRoute: TripRoute | null = null;
@@ -52,10 +54,17 @@ export async function initTripPlannerMap(container: HTMLElement, weatherServiceI
     zoom: 8,
     mapTypeControl: false,
     mapTypeId: 'roadmap',
-    mapId: environment.googleMapsMapId,
+    mapId: environment.googleMapsMapId, // Required for Advanced Markers
   });
 
   directionsRenderer.setMap(map);
+
+  // Initialize hotspot generator
+  hotspotGenerator = new HotSpotGenerator(map);
+  hotspotGenerator.initialize(true); // Enable debug mode
+  hotspotGenerator.onZoneEventCallback((event: HotspotEvent) => {
+    console.log('Hotspot event:', event);
+  });
 
   console.log('Trip planner map initialized');
   return map;
@@ -160,6 +169,11 @@ export async function updateMapWithRoute(route: TripRoute): Promise<void> {
       }
     });
 
+    // Generate hotspots along the route
+    if (hotspotGenerator) {
+      hotspotGenerator.generateHotspotsAlongRoute(route, 8);
+    }
+
     console.log('Map updated with route');
   } catch (error) {
     console.error('Error updating map with route:', error);
@@ -193,6 +207,11 @@ export function clearMapRoute(): void {
   if (routePolyline) {
     routePolyline.setMap(null);
     routePolyline = null;
+  }
+
+  // Clear hotspots
+  if (hotspotGenerator) {
+    hotspotGenerator.clearAllZones();
   }
 
   currentRoute = null;
@@ -302,10 +321,13 @@ async function createWeatherMarker(lat: number, lng: number, weatherData: any, t
   const customIconName = getCustomWeatherIcon(weather.id);
   const iconUrl = `/assets/weather-icons/${customIconName}.svg`;
   
-  // Create custom content for the weather marker
+  // Add small offset to weather markers so they don't overlap with start/end markers
+  const offset = type === 'start' ? 0.001 : -0.001; // Small offset in degrees
+  
+  // Create custom content for the weather marker with embedded SVG
   const content = document.createElement('div');
   content.innerHTML = `
-    <div class="weather-marker" style="
+    <div style="
       background: white;
       border: 2px solid #4285f4;
       border-radius: 50%;
@@ -318,7 +340,9 @@ async function createWeatherMarker(lat: number, lng: number, weatherData: any, t
       cursor: pointer;
       position: relative;
     ">
-      <img src="${iconUrl}" alt="${weather.description}" style="width: 20px; height: 20px;">
+      <svg width="20" height="20" viewBox="0 0 20 20">
+        <image href="${iconUrl}" width="20" height="20"/>
+      </svg>
       <div style="
         position: absolute;
         top: -5px;
@@ -338,9 +362,6 @@ async function createWeatherMarker(lat: number, lng: number, weatherData: any, t
       </div>
     </div>
   `;
-
-  // Add small offset to weather markers so they don't overlap with start/end markers
-  const offset = type === 'start' ? 0.001 : -0.001; // Small offset in degrees
   
   const marker = new AdvancedMarkerElement({
     map: map,
@@ -452,6 +473,79 @@ function getCustomWeatherIcon(weatherId: number): string {
 (window as any).calculateRoute = calculateRoute;
 (window as any).updateMapWithRoute = updateMapWithRoute;
 (window as any).clearMapRoute = clearMapRoute;
+
+// Add simulation functionality for testing hotspots
+export async function startRouteSimulation(): Promise<void> {
+  if (!currentRoute || !hotspotGenerator) {
+    console.warn('No route or hotspot generator available for simulation');
+    return;
+  }
+
+  console.log('Starting route simulation for hotspot testing...');
+  
+  // Create a simple vehicle marker for simulation using Advanced Marker
+  const { AdvancedMarkerElement } = await google.maps.importLibrary('marker') as google.maps.MarkerLibrary;
+  
+  const vehicleContent = document.createElement('div');
+  vehicleContent.innerHTML = `
+    <div style="
+      background: #4285F4;
+      border: 2px solid #FFFFFF;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      position: relative;
+    ">
+      <div style="
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 7px solid #4285F4;
+      "></div>
+    </div>
+  `;
+
+  const vehicleMarker = new AdvancedMarkerElement({
+    map: map,
+    position: currentRoute.start,
+    content: vehicleContent,
+    title: 'Simulated Vehicle'
+  });
+
+  // Simulate movement along the route
+  let currentIndex = 0;
+  const routePath = currentRoute.path;
+  const simulationInterval = setInterval(() => {
+    if (currentIndex >= routePath.length) {
+      clearInterval(simulationInterval);
+      console.log('Route simulation completed');
+      return;
+    }
+
+    const currentPosition = routePath[currentIndex];
+    vehicleMarker.position = currentPosition;
+    
+    // Check for hotspot detection
+    hotspotGenerator.checkPositionInZones({
+      lat: currentPosition.lat(),
+      lng: currentPosition.lng()
+    });
+
+    currentIndex++;
+  }, 1000); // Move every second
+}
+
+// Export simulation function
+(window as any).startRouteSimulation = startRouteSimulation;
 
 // Autocomplete functionality
 export async function initAutocomplete(inputElement: HTMLInputElement, type: 'start' | 'end'): Promise<google.maps.places.Autocomplete> {

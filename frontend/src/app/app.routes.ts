@@ -40,6 +40,10 @@ export const routes: Routes = [
             {
                 path: "rewards",
                 component: Rewards
+            },
+            {
+                path: 'trip-planner',
+                component: TripPlannerComponent,
             }
         ]
     },
@@ -51,9 +55,5 @@ export const routes: Routes = [
       path: 'login',
       canDeactivate: [],
       component: Login,
-    },
-    {
-      path: 'trip-planner',
-      component: TripPlannerComponent,
     }
 ];

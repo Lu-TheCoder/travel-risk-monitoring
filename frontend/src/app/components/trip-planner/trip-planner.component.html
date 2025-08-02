@@ -56,6 +56,15 @@
       >
         Clear Route
       </button>
+      
+      <button 
+        (click)="startSimulation()" 
+        [disabled]="!isRouteCalculated"
+        class="btn btn-secondary"
+        style="background: #28a745; color: white;"
+      >
+        🚗 Test Hotspots
+      </button>
     </div>
   </div>
 

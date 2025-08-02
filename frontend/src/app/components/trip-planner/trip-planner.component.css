@@ -378,4 +378,52 @@
   .trip-planner-header h2 {
     font-size: 1.8rem;
   }
+}
+
+/* Hotspot Notification Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Hotspot Zone Styles */
+.hotspot-zone {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.hotspot-zone:hover {
+  opacity: 0.8;
+}
+
+/* Debug Controls */
+.debug-controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  z-index: 1000;
+  min-width: 200px;
 } 
