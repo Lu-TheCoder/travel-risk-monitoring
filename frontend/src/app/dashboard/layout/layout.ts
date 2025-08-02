@@ -2,14 +2,13 @@ import { Component } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, OctagonAlert, Waypoints, CarFront, Gift, LucideIconData } from 'lucide-angular';
-import { Logo } from '../../shared/logo/logo';
 
 type IconKey = 'OctagonAlert' | 'Waypoints' | 'CarFront' | 'Gift';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule, Logo],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
   templateUrl: './layout.html',
   styleUrl: './layout.css'
 })
