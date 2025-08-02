@@ -8,6 +8,7 @@ import { Rewards } from './dashboard/rewards/rewards';
 import { Signup } from './pages/auth/signup/signup';
 import { Login } from './pages/auth/login/login';
 import { TripPlannerComponent } from './components/trip-planner/trip-planner.component';
+import { Community } from './dashboard/community/community';
 
 
 
@@ -46,6 +47,11 @@ export const routes: Routes = [
 
                 path: 'trip-planner',
                 component: TripPlannerComponent,
+
+            },
+            {
+                path: 'community',
+                component: Community
 
             }
         ]
