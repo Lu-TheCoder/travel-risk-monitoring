@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.map-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#mapContainer {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loading-spinner {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+  z-index: 10;
+  text-align: center;
+  max-width: 300px;
+}
+
+/* Weather marker animations */
+@keyframes weatherPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+}
+
+@keyframes weatherFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.weather-marker {
+  animation: weatherPulse 2s ease-in-out infinite, weatherFloat 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.weather-marker:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* Vehicle marker animations */
+@keyframes vehicleMove {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.vehicle-marker {
+  animation: vehicleMove 1s ease-in-out infinite;
+  transition: all 0.2s ease;
+}
+
+/* Geofence alert animations */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}

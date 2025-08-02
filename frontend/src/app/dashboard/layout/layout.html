@@ -1,0 +1,60 @@
+<main class="flex h-svh overflow-hidden">
+    <!-- Expanded Sidebar: md+ -->
+    <aside class="hidden md:flex w-48  flex-col h-full border-r border-[#ededed]">
+        <!-- Logo -->
+        <div class="flex flex-row px-4">
+            <img src="assets/logos/m_logo.svg" alt="Logo" class="w-12 h-12">
+        </div>
+  
+      <!-- Full Navigation -->
+      <div class="flex flex-col gap-2 p-2">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          routerLinkActive="bg-[#fff2f2] text-red-500"
+          class="flex flex-row items-center p-2 gap-2 rounded-md text-xs text-[#6a6a6a] hover:text-red-400 hover:bg-[#fff2f2] transition-colors duration-200 cursor-pointer"
+        >
+          <lucide-icon
+            [img]="icons[item.icon]"
+            class="w-4 h-4"
+            [ngClass]="{
+              'text-red-300': item.highlight === 'red' && !isActive(item.route),
+              'text-red-500': isActive(item.route)
+            }"
+          ></lucide-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </div>
+    </aside>
+  
+    <!-- Collapsed Sidebar: < md -->
+    <aside class="flex md:hidden w-16 flex-col h-full border-r border-[#ededed] items-center">
+      <!-- Logo -->
+      <img src="assets/logos/m_logo.svg" alt="Logo" class="w-8 h-8 m-4">
+    
+    
+      <!-- Icons only -->
+      <div class="flex flex-col gap-6 p-2">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          routerLinkActive="bg-[#fff2f2] text-red-500"
+          class="p-2 rounded-md text-[#6a6a6a] hover:text-red-400 hover:bg-[#fff2f2] transition-colors duration-200 flex items-center justify-center"
+        >
+          <lucide-icon
+            [img]="icons[item.icon]"
+            class="w-5 h-5"
+            [ngClass]="{
+              'text-red-300': item.highlight === 'red' && !isActive(item.route),
+              'text-red-500': isActive(item.route)
+            }"
+          ></lucide-icon>
+        </a>
+      </div>
+    </aside>
+  
+    <!-- Main Content -->
+    <section class="flex-1">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
