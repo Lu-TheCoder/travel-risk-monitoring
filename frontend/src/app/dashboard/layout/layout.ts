@@ -6,18 +6,10 @@ import {
   RouterLinkActive,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  LucideAngularModule,
-  OctagonAlert,
-  Waypoints,
-  CarFront,
-  Gift,
-  Map,
-  LucideIconData,
-  HandHeart,
-} from 'lucide-angular';
 
-type IconKey = 'OctagonAlert' | 'Waypoints' | 'CarFront' | 'Gift' | 'Map' |'HandHeart';
+import { LucideAngularModule, OctagonAlert, Waypoints, CarFront, Gift, Map, LucideIconData , HandHeart} from 'lucide-angular';
+
+type IconKey = 'OctagonAlert' | 'Waypoints' | 'CarFront' | 'Gift' | 'Map' | 'HandHeart';
 
 @Component({
   selector: 'app-layout',
@@ -39,7 +31,7 @@ export class Layout {
     CarFront,
     Gift,
     Map,
-    HandHeart,
+    HandHeart
   };
 
   readonly navItems: {
@@ -62,6 +54,7 @@ export class Layout {
     { label: 'My Vehicles', icon: 'CarFront', route: '/dashboard/vehicles' },
     { label: 'My Rewards', icon: 'Gift', route: '/dashboard/rewards' },
     { label: 'Community', icon: 'HandHeart', route: '/dashboard/community' },
+    { label: 'Trip Planner', icon: 'Map', route: '/dashboard/trip-planner' },
   ];
 
   constructor(public router: Router) {}
