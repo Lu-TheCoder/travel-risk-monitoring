@@ -1,0 +1,137 @@
+<div class="trip-planner-container">
+  <!-- Header -->
+  <div class="trip-planner-header">
+    <h2>🚗 Trip Planner</h2>
+    <p>Plan your journey with real-time weather information</p>
+  </div>
+
+  <!-- Input Form -->
+  <div class="trip-input-form">
+    <div class="input-group">
+      <label for="startLocation">
+        <span class="icon">📍</span>
+        Start Location
+      </label>
+      <input 
+        type="text" 
+        id="startLocation"
+        [(ngModel)]="startLocation"
+        placeholder="Enter start location..."
+        class="location-input"
+        #startLocationInput
+        (input)="onStartLocationInput($event)"
+      >
+    </div>
+
+    <div class="input-group">
+      <label for="endLocation">
+        <span class="icon">🎯</span>
+        End Location
+      </label>
+      <input 
+        type="text" 
+        id="endLocation"
+        [(ngModel)]="endLocation"
+        placeholder="Enter destination..."
+        class="location-input"
+        #endLocationInput
+        (input)="onEndLocationInput($event)"
+      >
+    </div>
+
+    <div class="button-group">
+      <button 
+        (click)="calculateRoute()" 
+        [disabled]="isLoading"
+        class="btn btn-primary"
+      >
+        <span *ngIf="isLoading" class="loading-spinner"></span>
+        {{ isLoading ? 'Calculating...' : 'Calculate Route' }}
+      </button>
+      
+      <button 
+        (click)="clearRoute()" 
+        [disabled]="!isRouteCalculated"
+        class="btn btn-secondary"
+      >
+        Clear Route
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Display -->
+  <div *ngIf="error" class="error-message">
+    <span class="error-icon">⚠️</span>
+    {{ error }}
+  </div>
+
+  <!-- Route Information -->
+  <div *ngIf="tripRoute && isRouteCalculated" class="route-info">
+    <div class="route-summary">
+      <h3>Route Summary</h3>
+      <div class="route-details">
+        <div class="route-stat">
+          <span class="stat-icon">📏</span>
+          <span class="stat-label">Distance:</span>
+          <span class="stat-value">{{ formatDistance(tripRoute.distance) }}</span>
+        </div>
+        <div class="route-stat">
+          <span class="stat-icon">⏱️</span>
+          <span class="stat-label">Duration:</span>
+          <span class="stat-value">{{ formatDuration(tripRoute.duration) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weather Information -->
+    <div class="weather-info">
+      <h3>Weather Conditions</h3>
+      <div class="weather-cards">
+        <!-- Start Location Weather -->
+        <div class="weather-card" *ngIf="startWeather">
+          <div class="weather-header">
+            <span class="weather-icon">📍</span>
+            <span class="location-name">{{ tripRoute.start.address }}</span>
+          </div>
+          <div class="weather-details">
+            <div class="temperature">{{ roundNumber(startWeather.main.temp) }}°C</div>
+            <div class="description">{{ startWeather.weather[0].description }}</div>
+            <div class="weather-stats">
+              <span>Humidity: {{ startWeather.main.humidity }}%</span>
+              <span>Wind: {{ startWeather.wind.speed }} m/s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- End Location Weather -->
+        <div class="weather-card" *ngIf="endWeather">
+          <div class="weather-header">
+            <span class="weather-icon">🎯</span>
+            <span class="location-name">{{ tripRoute.end.address }}</span>
+          </div>
+          <div class="weather-details">
+            <div class="temperature">{{ roundNumber(endWeather.main.temp) }}°C</div>
+            <div class="description">{{ endWeather.weather[0].description }}</div>
+            <div class="weather-stats">
+              <span>Humidity: {{ endWeather.main.humidity }}%</span>
+              <span>Wind: {{ endWeather.wind.speed }} m/s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div class="map-container">
+    <div #mapContainer class="map"></div>
+    
+    <!-- Loading Overlay -->
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p>Loading map...</p>
+      </div>
+    </div>
+  </div>
+</div> 
