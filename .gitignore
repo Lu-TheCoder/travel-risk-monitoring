@@ -55,4 +55,5 @@ Database/package-lock.json
 
 #backend
 backend/.env
+backend/node_modules
 
