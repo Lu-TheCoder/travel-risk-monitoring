@@ -1,131 +1,130 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { RiskAlertService, RiskAlert } from '../../services/risk-alert.service';
+<link rel="stylesheet" href="alerts.component.css">
+<div class="alerts-container">
+  <div class="header">
+    <h1>Risk Alerts</h1>
+    <button class="back-button" (click)="goToDashboard()">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+  </div>
 
-@Component({
-  selector: 'app-alerts',
-  templateUrl: './alerts.component.html',
-  styleUrls: ['./alerts.component.css']
-})
-export class AlertsComponent implements OnInit {
-  alerts: RiskAlert[] = [];
-  filteredAlerts: RiskAlert[] = [];
-  activeFilter: string = 'all';
-  
-  // Alert type icons mapping
-  alertIcons: {[key: string]: string} = {
-    hail: 'hail-icon mock-icon',
-    heavy_rain: 'rain-icon mock-icon',
-    flood: 'flood-icon mock-icon',
-    high_wind: 'wind-icon mock-icon',
-    general: 'general-icon mock-icon'
-  };
+  <div class="filters-container">
+    <div class="filter-group">
+      <span class="filter-label">Filter by:</span>
+      <div class="filter-buttons">
+        <button 
+          [class.active]="activeFilter === 'all'"
+          (click)="applyFilter('all')">All</button>
+        <button 
+          [class.active]="activeFilter === 'unacknowledged'"
+          (click)="applyFilter('unacknowledged')">Unacknowledged</button>
+        <button 
+          [class.active]="activeFilter === 'high'"
+          (click)="applyFilter('high')">High Risk</button>
+        <button 
+          [class.active]="activeFilter === 'moderate'"
+          (click)="applyFilter('moderate')">Moderate Risk</button>
+        <button 
+          [class.active]="activeFilter === 'low'"
+          (click)="applyFilter('low')">Low Risk</button>
+      </div>
+    </div>
 
-  constructor(
-    private riskAlertService: RiskAlertService,
-    private router: Router
-  ) {}
+    <div class="filter-group">
+      <span class="filter-label">Weather Type:</span>
+      <div class="filter-buttons">
+        <button 
+          [class.active]="activeFilter === 'hail'"
+          (click)="applyFilter('hail')">
+          <span class="weather-icon hail-icon mock-icon"><i class="fas fa-snowflake"></i></span> Hail
+        </button>
+        <button 
+          [class.active]="activeFilter === 'heavy_rain'"
+          (click)="applyFilter('heavy_rain')">
+          <span class="weather-icon rain-icon mock-icon"><i class="fas fa-cloud-rain"></i></span> Heavy Rain
+        </button>
+        <button 
+          [class.active]="activeFilter === 'flood'"
+          (click)="applyFilter('flood')">
+          <span class="weather-icon flood-icon mock-icon"><i class="fas fa-water"></i></span> Flood
+        </button>
+        <button 
+          [class.active]="activeFilter === 'high_wind'"
+          (click)="applyFilter('high_wind')">
+          <span class="weather-icon wind-icon mock-icon"><i class="fas fa-wind"></i></span> High Wind
+        </button>
+      </div>
+    </div>
 
-  ngOnInit(): void {
-    this.riskAlertService.getAlerts().subscribe(alerts => {
-      this.alerts = alerts;
-      this.applyFilter(this.activeFilter);
-    });
-  }
+    <button class="clear-all-button" (click)="clearAllAlerts()" *ngIf="alerts.length > 0">
+      <i class="fas fa-trash-alt"></i> Clear All Alerts
+    </button>
+  </div>
 
-  /**
-   * Apply filter to alerts
-   */
-  applyFilter(filter: string): void {
-    this.activeFilter = filter;
-    
-    switch (filter) {
-      case 'high':
-      case 'moderate':
-      case 'low':
-        this.filteredAlerts = this.alerts.filter(alert => alert.level === filter);
-        break;
-      case 'unacknowledged':
-        this.filteredAlerts = this.alerts.filter(alert => !alert.acknowledged);
-        break;
-      case 'hail':
-      case 'heavy_rain':
-      case 'flood':
-      case 'high_wind':
-        this.filteredAlerts = this.alerts.filter(alert => alert.type === filter);
-        break;
-      case 'all':
-      default:
-        this.filteredAlerts = [...this.alerts];
-        break;
-    }
-  }
+  <div class="alerts-list" *ngIf="filteredAlerts.length > 0">
+    <div class="alert-card" 
+         *ngFor="let alert of filteredAlerts"
+         [class.high]="alert.level === 'high'"
+         [class.moderate]="alert.level === 'moderate'"
+         [class.low]="alert.level === 'low'"
+         [class.acknowledged]="alert.acknowledged"
+         (click)="viewOnMap(alert)">
+      
+      <div class="alert-icon" [ngClass]="alertIcons[alert.type]">
+        <i class="fas" [ngClass]="{
+          'fa-snowflake': alert.type === 'hail',
+          'fa-cloud-rain': alert.type === 'heavy_rain',
+          'fa-water': alert.type === 'flood',
+          'fa-wind': alert.type === 'high_wind',
+          'fa-exclamation-circle': alert.type === 'general'
+        }"></i>
+      </div>
+      
+      <div class="alert-content">
+        <div class="alert-header">
+          <h3>{{ alert.message }}</h3>
+          <span class="alert-time">{{ getFormattedDate(alert.date) }}</span>
+        </div>
+        
+        <p class="alert-details" *ngIf="alert.details">{{ alert.details }}</p>
+        
+        <div class="alert-location" *ngIf="alert.location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ alert.location.name || 'Unknown location' }}</span>
+        </div>
+        
+        <div class="alert-tags">
+          <span class="alert-level-tag" [ngClass]="alert.level">{{ alert.level }}</span>
+          <span class="alert-type-tag" [ngClass]="alert.type">{{ alert.type.replace('_', ' ') }}</span>
+          <span class="alert-status-tag" *ngIf="alert.acknowledged">Acknowledged</span>
+        </div>
+      </div>
+      
+      <div class="alert-actions">
+        <button class="icon-button acknowledge" 
+                *ngIf="!alert.acknowledged"
+                (click)="acknowledgeAlert(alert.id, $event)" 
+                title="Acknowledge Alert">
+          <i class="fas fa-check"></i>
+        </button>
+        <button class="icon-button view-map" 
+                title="View on Map">
+          <i class="fas fa-map"></i>
+        </button>
+        <button class="icon-button delete" 
+                (click)="deleteAlert(alert.id, $event)"
+                title="Delete Alert">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 
-  /**
-   * Acknowledge an alert
-   */
-  acknowledgeAlert(id: number, event: Event): void {
-    event.stopPropagation();
-    this.riskAlertService.acknowledgeAlert(id);
-  }
-
-  /**
-   * Delete an alert
-   */
-  deleteAlert(id: number, event: Event): void {
-    event.stopPropagation();
-    this.riskAlertService.deleteAlert(id);
-  }
-
-  /**
-   * Clear all alerts
-   */
-  clearAllAlerts(): void {
-    if (confirm('Are you sure you want to clear all alerts?')) {
-      this.riskAlertService.clearAlerts();
-    }
-  }
-
-  /**
-   * Navigate to map view for a specific alert location
-   */
-  viewOnMap(alert: RiskAlert): void {
-    if (alert.location) {
-      // In a real app, we would navigate to the map with the location as a parameter
-      this.router.navigate(['/map'], { 
-        queryParams: { 
-          lat: alert.location.lat, 
-          lng: alert.location.lng 
-        } 
-      });
-    }
-  }
-
-  /**
-   * Get the formatted date for an alert
-   */
-  getFormattedDate(date: Date): string {
-    if (!date) return '';
-    
-    const now = new Date();
-    const alertDate = new Date(date);
-    const diffMs = now.getTime() - alertDate.getTime();
-    const diffMins = Math.round(diffMs / 60000);
-    
-    if (diffMins < 60) {
-      return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-    } else if (diffMins < 1440) {
-      const hours = Math.floor(diffMins / 60);
-      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    } else {
-      return alertDate.toLocaleDateString();
-    }
-  }
-
-  /**
-   * Navigate back to dashboard
-   */
-  goToDashboard(): void {
-    this.router.navigate(['/dashboard']);
-  }
-}
+  <div class="no-alerts" *ngIf="filteredAlerts.length === 0">
+    <div class="empty-state-icon mock-icon">
+      <i class="fas fa-bell-slash"></i>
+    </div>
+    <h3>No alerts found</h3>
+    <p *ngIf="activeFilter !== 'all'">Try changing your filter settings</p>
+    <p *ngIf="activeFilter === 'all' && alerts.length === 0">You're all clear! No risk alerts at the moment.</p>
+  </div>
+</div>
