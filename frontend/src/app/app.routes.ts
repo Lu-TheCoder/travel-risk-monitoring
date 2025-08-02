@@ -7,6 +7,7 @@ import { Vehicles } from './dashboard/vehicles/vehicles';
 import { Rewards } from './dashboard/rewards/rewards';
 import { Signup } from './pages/auth/signup/signup';
 import { Login } from './pages/auth/login/login';
+import { Community } from './dashboard/community/community';
 
 
 export const routes: Routes = [
@@ -39,6 +40,10 @@ export const routes: Routes = [
             {
                 path: "rewards",
                 component: Rewards
+            },
+            {
+                path:"community",
+                component: Community
             }
         ]
     },
