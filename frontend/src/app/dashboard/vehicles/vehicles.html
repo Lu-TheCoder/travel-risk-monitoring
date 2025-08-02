@@ -1,8 +1,8 @@
-<div class="p-6 h-screen flex flex-col">
+<div class="p-6 h-screen bg-slate-200 flex flex-col">
   <h1 class="text-2xl font-bold text-green-600 mb-4">My Vehicles</h1>
   <p class="text-gray-600">Your vehicle management and tracking will appear here.</p>
-  <div class="h-full flex flex-row gap-10">
-    <div class="shadow shadow-gray-300 w-1/2 rounded-lg p-7">
+  <div class="h-full flex flex-row gap-10 ">
+    <div class="shadow shadow-gray-300 w-1/2 rounded-lg p-7 bg-white">
       <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit($event)">
       <fieldset class="flex flex-col gap-1 mt-2 animate-up">
           <label for="brand" class="text-sm sm:text-base text-[#1e1e1e]">Car Brand:</label>
@@ -55,24 +55,31 @@
         <button class="rounded-md p-2 text-white bg-red-600 font-semibold mt-5">Submit</button>
       </form>
     </div>
-    <div class="shadow shadow-gray-300 w-1/2 rounded-lg p-7">
+    <div class="shadow shadow-gray-300 w-1/2 rounded-lg p-7 bg-white">
       <h1 class="font-bold text-xl mb-5"> Your Vehicles </h1>
       @for(vehicle of vehicles; track $index) {
-        <div class="flex flex-row">
+        <div class="flex flex-row rounded-sm shadow shadow-grey-600 w-full p-5 gap-10 mb-4 items-center">
            <!-- Icon here  -->
-
+          <fa-icon [icon]="faCar" class="text-4xl text-red-500"></fa-icon>
           <!-- Vehicle data here -->
-          <div class="flex flex-col shadow shadow-grey-600 w-full rounded-sm mb-4 p-5 gap-1">
+          <div class="flex flex-col rounded-sm gap-1">
             <p class="font-semibold text-lg">
               {{vehicle.brand}}
             </p>
-            <p class="font-semibold text-sm">
+            <p class="font-light text-sm">
               {{vehicle.model}}
             </p>
-            <p class="font-light text-sm">
-              <span>{{vehicle.year}}</span>
+            <p class=" font-semibold text-xs">
+              <span>{{vehicle.year}} </span>
               <span>{{vehicle.type}}</span>
             </p>
+          </div>
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-blue-300 rounded-full px-2 py-1 text-xs">hail</div>
+            <div class="bg-red-300  rounded-full px-2 py-1 text-xs">theft</div>
+            <div class="bg-blue-300 rounded-full px-2 py-1 text-xs">snow</div>
+            <div class="bg-blue-300  rounded-full px-2 py-1 text-xs">floods</div>
+            <div class="bg-yellow-200 rounded-full px-2 py-1 text-xs">cloning</div>
           </div>
         </div>
       }
