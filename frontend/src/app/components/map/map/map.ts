@@ -12,8 +12,20 @@ import { initMap } from './map.lib'; // adjust path if needed
 })
 export class MapComponent implements AfterViewInit {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
+  
+  isLoading = true;
+  error: string | null = null;
 
   async ngAfterViewInit() {
-    await initMap(this.mapContainer.nativeElement);
+    try {
+      this.isLoading = true;
+      this.error = null;
+      await initMap(this.mapContainer.nativeElement);
+      this.isLoading = false;
+    } catch (err) {
+      this.isLoading = false;
+      this.error = err instanceof Error ? err.message : 'Failed to load map';
+      console.error('Map initialization error:', err);
+    }
   }
 }
