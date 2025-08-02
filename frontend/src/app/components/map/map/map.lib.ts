@@ -1,6 +1,7 @@
 import { Loader } from '@googlemaps/js-api-loader';
 import { environment } from '../../../../environments/environment';
 import { GeoJSONLoader } from '../../../utils/parsers/GeoJson.parser';
+import { create_circle_fence, is_point_inside_circle } from '../../../utils/geometry/geometry';
 
 // Route simulation types
 interface RoutePoint {
@@ -10,6 +11,17 @@ interface RoutePoint {
   speed?: number;
 }
 
+interface Geofence {
+  id: string;
+  name: string;
+  type: 'circle' | 'polygon';
+  circle?: google.maps.Circle;
+  polygon?: google.maps.Polygon;
+  isActive: boolean;
+  riskLevel: 'low' | 'medium' | 'high';
+  description: string;
+}
+
 interface SimulationState {
   isRunning: boolean;
   currentIndex: number;
@@ -17,6 +29,14 @@ interface SimulationState {
   vehicleMarker?: google.maps.Marker;
   routePolyline?: google.maps.Polyline;
   speedMultiplier: number;
+  geofences: Geofence[];
+  activeGeofences: Set<string>;
+  geofenceHistory: Array<{
+    geofenceId: string;
+    action: 'enter' | 'exit';
+    timestamp: number;
+    position: { lat: number; lng: number };
+  }>;
 }
 
 export async function initMap(container: HTMLElement) {
@@ -82,7 +102,10 @@ export async function initMap(container: HTMLElement) {
     isRunning: false,
     currentIndex: 0,
     startTime: 0,
-    speedMultiplier: 1
+    speedMultiplier: 1,
+    geofences: [],
+    activeGeofences: new Set(),
+    geofenceHistory: []
   };
 
   // Create route polyline
@@ -95,6 +118,77 @@ export async function initMap(container: HTMLElement) {
     strokeWeight: 3,
     map: map
   });
+
+  // Create geofences along the route
+  function createGeofences() {
+    const geofenceColors = {
+      low: { fill: '#4CAF50', stroke: '#2E7D32' },
+      medium: { fill: '#FF9800', stroke: '#E65100' },
+      high: { fill: '#F44336', stroke: '#B71C1C' }
+    };
+
+    // Create geofences at key points along the route
+    const geofencePoints = [
+      { 
+        point: routePoints[0], 
+        name: 'Start Point', 
+        riskLevel: 'low' as const,
+        description: 'Route starting point'
+      },
+      { 
+        point: routePoints[Math.floor(routePoints.length * 0.25)], 
+        name: 'Quarter Point', 
+        riskLevel: 'medium' as const,
+        description: '25% of route completed'
+      },
+      { 
+        point: routePoints[Math.floor(routePoints.length * 0.5)], 
+        name: 'Mid Point', 
+        riskLevel: 'high' as const,
+        description: 'High risk area - construction zone'
+      },
+      { 
+        point: routePoints[Math.floor(routePoints.length * 0.75)], 
+        name: 'Three Quarter Point', 
+        riskLevel: 'medium' as const,
+        description: '75% of route completed'
+      },
+      { 
+        point: routePoints[routePoints.length - 1], 
+        name: 'End Point', 
+        riskLevel: 'low' as const,
+        description: 'Route destination'
+      }
+    ];
+
+    geofencePoints.forEach((geofenceData, index) => {
+      const colors = geofenceColors[geofenceData.riskLevel];
+      const circle = create_circle_fence(
+        100, // 100 meter radius
+        { lat: geofenceData.point.lat, lon: geofenceData.point.lng },
+        colors.fill,
+        colors.stroke,
+        map
+      );
+
+      const geofence: Geofence = {
+        id: `geofence-${index}`,
+        name: geofenceData.name,
+        type: 'circle',
+        circle: circle,
+        isActive: true,
+        riskLevel: geofenceData.riskLevel,
+        description: geofenceData.description
+      };
+
+      simulationState.geofences.push(geofence);
+    });
+
+    console.log('Created', simulationState.geofences.length, 'geofences');
+  }
+
+  // Initialize geofences
+  createGeofences();
 
   // Create vehicle marker
   simulationState.vehicleMarker = new google.maps.Marker({
@@ -131,9 +225,12 @@ export async function initMap(container: HTMLElement) {
   function resetSimulation() {
     stopSimulation();
     simulationState.currentIndex = 0;
+    simulationState.activeGeofences.clear();
+    simulationState.geofenceHistory = [];
     if (simulationState.vehicleMarker) {
       simulationState.vehicleMarker.setPosition(routePoints[0]);
     }
+    updateGeofenceDisplay();
     console.log('Route simulation reset');
   }
 
@@ -183,6 +280,9 @@ export async function initMap(container: HTMLElement) {
       });
     }
 
+    // Check geofence detection
+    checkGeofenceDetection({ lat: interpolatedLat, lon: interpolatedLng });
+
     // Check if simulation is complete
     if (adjustedTime >= routePoints[routePoints.length - 1].timestamp) {
       stopSimulation();
@@ -192,6 +292,113 @@ export async function initMap(container: HTMLElement) {
 
     // Continue simulation
     requestAnimationFrame(updateSimulation);
+  }
+
+  // Geofence detection function
+  function checkGeofenceDetection(vehiclePosition: { lat: number; lon: number }) {
+    simulationState.geofences.forEach(geofence => {
+      if (!geofence.isActive || !geofence.circle) return;
+
+      const isInside = is_point_inside_circle(vehiclePosition, geofence.circle);
+      const wasInside = simulationState.activeGeofences.has(geofence.id);
+
+      if (isInside && !wasInside) {
+        // Vehicle entered geofence
+        simulationState.activeGeofences.add(geofence.id);
+        simulationState.geofenceHistory.push({
+          geofenceId: geofence.id,
+          action: 'enter',
+          timestamp: Date.now(),
+          position: { lat: vehiclePosition.lat, lng: vehiclePosition.lon }
+        });
+
+        console.log(`🚨 ENTERED ${geofence.riskLevel.toUpperCase()} RISK ZONE: ${geofence.name}`);
+        console.log(`📍 ${geofence.description}`);
+        
+        // Show visual alert
+        showGeofenceAlert(geofence, 'enter');
+      } else if (!isInside && wasInside) {
+        // Vehicle exited geofence
+        simulationState.activeGeofences.delete(geofence.id);
+        simulationState.geofenceHistory.push({
+          geofenceId: geofence.id,
+          action: 'exit',
+          timestamp: Date.now(),
+          position: { lat: vehiclePosition.lat, lng: vehiclePosition.lon }
+        });
+
+        console.log(`✅ EXITED ${geofence.riskLevel.toUpperCase()} RISK ZONE: ${geofence.name}`);
+        
+        // Show visual alert
+        showGeofenceAlert(geofence, 'exit');
+      }
+    });
+  }
+
+  // Visual alert for geofence events
+  function showGeofenceAlert(geofence: Geofence, action: 'enter' | 'exit') {
+    const alertDiv = document.createElement('div');
+    const colors = {
+      low: '#4CAF50',
+      medium: '#FF9800', 
+      high: '#F44336'
+    };
+    
+    alertDiv.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: ${colors[geofence.riskLevel]};
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 2000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: fadeInOut 3s ease-in-out;
+    `;
+    
+    alertDiv.textContent = `${action.toUpperCase()}: ${geofence.name}`;
+    container.appendChild(alertDiv);
+    
+    // Update geofence display
+    updateGeofenceDisplay();
+    
+    // Remove alert after animation
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.parentNode.removeChild(alertDiv);
+      }
+    }, 3000);
+  }
+
+  // Update geofence display in controls
+  function updateGeofenceDisplay() {
+    const activeGeofencesElement = document.getElementById('activeGeofences');
+    const totalEventsElement = document.getElementById('totalEvents');
+    const geofenceLogElement = document.getElementById('geofenceLog');
+    
+    if (activeGeofencesElement) {
+      activeGeofencesElement.textContent = simulationState.activeGeofences.size.toString();
+    }
+    
+    if (totalEventsElement) {
+      totalEventsElement.textContent = simulationState.geofenceHistory.length.toString();
+    }
+    
+    if (geofenceLogElement) {
+      // Show last 3 events
+      const recentEvents = simulationState.geofenceHistory.slice(-3);
+      geofenceLogElement.innerHTML = recentEvents.map(event => {
+        const geofence = simulationState.geofences.find(g => g.id === event.geofenceId);
+        const actionIcon = event.action === 'enter' ? '🚨' : '✅';
+        const time = new Date(event.timestamp).toLocaleTimeString();
+        return `<div>${actionIcon} ${geofence?.name || 'Unknown'} (${time})</div>`;
+      }).join('');
+    }
   }
 
   // Add live center printing (For debugging purposes)
@@ -248,10 +455,17 @@ export async function initMap(container: HTMLElement) {
       <button id="stopSim" style="margin-right: 5px; padding: 4px 8px;">Stop</button>
       <button id="resetSim" style="padding: 4px 8px;">Reset</button>
     </div>
-    <div>
+    <div style="margin-bottom: 8px;">
       <label>Speed: </label>
       <input type="range" id="speedSlider" min="0.1" max="5" step="0.1" value="1" style="width: 80px;">
       <span id="speedValue">1x</span>
+    </div>
+    <div style="font-size: 10px; margin-bottom: 8px;">
+      <div>Active Geofences: <span id="activeGeofences">0</span></div>
+      <div>Total Events: <span id="totalEvents">0</span></div>
+    </div>
+    <div style="font-size: 9px; max-height: 60px; overflow-y: auto;">
+      <div id="geofenceLog" style="color: #ccc;"></div>
     </div>
   `;
   
