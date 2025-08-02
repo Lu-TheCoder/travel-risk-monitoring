@@ -52,3 +52,76 @@
   text-align: center;
   max-width: 300px;
 }
+
+/* Weather marker animations */
+@keyframes weatherPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+}
+
+@keyframes weatherFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.weather-marker {
+  animation: weatherPulse 2s ease-in-out infinite, weatherFloat 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.weather-marker:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* Vehicle marker animations */
+@keyframes vehicleMove {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.vehicle-marker {
+  animation: vehicleMove 1s ease-in-out infinite;
+  transition: all 0.2s ease;
+}
+
+/* Geofence alert animations */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}
