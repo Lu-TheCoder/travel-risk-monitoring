@@ -9,7 +9,7 @@ export class GoogleMapsLoaderService {
   private loader = new Loader({
     apiKey: environment.googleMapsApiKey || 'YOUR_API_KEY_HERE',
     version: 'weekly',
-    libraries: ['places'],
+    libraries: ['places', 'geometry'],
   });
 
   private googlePromise: Promise<typeof google> | null = null;
