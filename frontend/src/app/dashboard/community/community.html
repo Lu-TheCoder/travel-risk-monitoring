@@ -1,24 +1,28 @@
-<div class="flex flex-row items-center justify-between">
-  <div class="flex flex-col gap-2 p-4">
-    <div class="flex flex-row items-center gap-2">
-      <lucide-icon [img]="icon.HandHeart" class="w-8 h-8"></lucide-icon>
-      <h3 class="font-bold text-3xl text-red-500">Community</h3>
-    </div>
-    <p class="text-gray-600 text-sm">
-      Share and view recent community-reported incidents in your area.
-    </p>
-  </div>
+<div class="community-container">
+  <div class="community-header">
+    <div class="flex flex-row items-center justify-between">
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-row items-center gap-2">
+          <lucide-icon [img]="icon.HandHeart" class="w-8 h-8"></lucide-icon>
+          <h3 class="font-bold text-3xl text-red-500">Community</h3>
+        </div>
+        <p class="text-gray-600 text-sm">
+          Share and view recent community-reported incidents in your area.
+        </p>
+      </div>
 
-  <div class="border border-[#f6cece] bg-[#fff5f5bf] text-[#ff6b6b] mr-4 p-4 flex flex-row items-center gap-2">
-    <lucide-icon [img]="icon.MessageSquareWarning"></lucide-icon>
-    Report Incident
+      <div class="border border-[#f6cece] bg-[#fff5f5bf] text-[#ff6b6b] p-4 flex flex-row items-center gap-2">
+        <lucide-icon [img]="icon.MessageSquareWarning"></lucide-icon>
+        Report Incident
+      </div>
+    </div>
   </div>
-</div>
-<main class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+  
+  <main class="community-main">
   <!-- Community Form -->
   <form
     (ngSubmit)="onSubmit($event)"
-    class="bg-white rounded-2xl shadow p-6 flex flex-col gap-4"
+    class="community-form flex flex-col gap-4"
   >
     <h2 class="text-xl font-bold mb-2 text-red-500">Report an Incident</h2>
     <label
@@ -115,10 +119,11 @@
     </button>
   </form>
 
-  <div class="relative h-96">
+  <div class="community-map-container">
     <app-community-map 
       (locationSelected)="onMapClick($event)"
       (riskPointsChange)="onRiskPointsChange($event)">
     </app-community-map>
   </div>
-</main>
+  </main>
+</div>
