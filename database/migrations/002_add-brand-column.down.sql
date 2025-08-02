@@ -1,0 +1,2 @@
+ALTER TABLE vehicle
+DROP COLUMN brand;
