@@ -10,6 +10,7 @@ import { Login } from './pages/auth/login/login';
 import { TripPlannerComponent } from './components/trip-planner/trip-planner.component';
 
 
+
 export const routes: Routes = [
 
     {
@@ -42,8 +43,10 @@ export const routes: Routes = [
                 component: Rewards
             },
             {
+
                 path: 'trip-planner',
                 component: TripPlannerComponent,
+
             }
         ]
     },

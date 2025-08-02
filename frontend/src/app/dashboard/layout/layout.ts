@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  Router,
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { CommonModule } from '@angular/common';
+
 import { LucideAngularModule, OctagonAlert, Waypoints, CarFront, Gift, Map, LucideIconData , HandHeart} from 'lucide-angular';
 
 type IconKey = 'OctagonAlert' | 'Waypoints' | 'CarFront' | 'Gift' | 'Map' | 'HandHeart';
@@ -8,9 +14,15 @@ type IconKey = 'OctagonAlert' | 'Waypoints' | 'CarFront' | 'Gift' | 'Map' | 'Han
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    LucideAngularModule,
+  ],
   templateUrl: './layout.html',
-  styleUrl: './layout.css'
+  styleUrl: './layout.css',
 })
 export class Layout {
   readonly icons: Record<IconKey, LucideIconData> = {
@@ -22,11 +34,26 @@ export class Layout {
     HandHeart
   };
 
-  readonly navItems: { label: string; icon: IconKey; route: string; highlight?: 'red' }[] = [
-    { label: 'My Risk Score', icon: 'OctagonAlert', route: '/dashboard/risk', highlight: 'red' },
-    { label: 'My Route Analysis', icon: 'Waypoints', route: '/dashboard/routes' },
+  readonly navItems: {
+    label: string;
+    icon: IconKey;
+    route: string;
+    highlight?: 'red';
+  }[] = [
+    {
+      label: 'My Risk Score',
+      icon: 'OctagonAlert',
+      route: '/dashboard/risk',
+      highlight: 'red',
+    },
+    {
+      label: 'My Route Analysis',
+      icon: 'Waypoints',
+      route: '/dashboard/routes',
+    },
     { label: 'My Vehicles', icon: 'CarFront', route: '/dashboard/vehicles' },
     { label: 'My Rewards', icon: 'Gift', route: '/dashboard/rewards' },
+    { label: 'Community', icon: 'HandHeart', route: '/dashboard/community' },
     { label: 'Trip Planner', icon: 'Map', route: '/dashboard/trip-planner' },
   ];
 
