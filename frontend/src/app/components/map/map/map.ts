@@ -2,6 +2,7 @@
 import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { initMap } from './map.lib'; // adjust path if needed
+import { WeatherService } from '../../../services/weather/weather.service';
 
 @Component({
   selector: 'app-map',
@@ -16,11 +17,16 @@ export class MapComponent implements AfterViewInit {
   isLoading = true;
   error: string | null = null;
 
+  constructor(private weatherService: WeatherService) {
+    console.log('MapComponent: WeatherService injected:', !!this.weatherService);
+  }
+
   async ngAfterViewInit() {
     try {
       this.isLoading = true;
       this.error = null;
-      await initMap(this.mapContainer.nativeElement);
+      console.log('MapComponent: Calling initMap with weatherService:', !!this.weatherService);
+      await initMap(this.mapContainer.nativeElement, this.weatherService);
       this.isLoading = false;
     } catch (err) {
       this.isLoading = false;
