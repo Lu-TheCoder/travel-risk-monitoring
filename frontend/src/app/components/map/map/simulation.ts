@@ -23,7 +23,7 @@ export interface SimulationState {
   isRunning: boolean;
   currentIndex: number;
   startTime: number;
-  vehicleMarker?: google.maps.Marker;
+  vehicleMarker?: any; // AdvancedMarkerElement
   routePolyline?: google.maps.Polyline;
   speedMultiplier: number;
   geofences: Geofence[];
@@ -42,11 +42,13 @@ export class RouteSimulation {
   private routePoints: RoutePoint[];
   private state: SimulationState;
   private onGeofenceEvent?: (geofence: Geofence, action: 'enter' | 'exit') => void;
+  private AdvancedMarkerElement: any;
 
-  constructor(map: google.maps.Map, container: HTMLElement, routePoints: RoutePoint[]) {
+  constructor(map: google.maps.Map, container: HTMLElement, routePoints: RoutePoint[], AdvancedMarkerElement: any) {
     this.map = map;
     this.container = container;
     this.routePoints = routePoints;
+    this.AdvancedMarkerElement = AdvancedMarkerElement;
     this.state = {
       isRunning: false,
       currentIndex: 0,
@@ -86,18 +88,40 @@ export class RouteSimulation {
 
   // Create vehicle marker
   private createVehicleMarker(): void {
-    this.state.vehicleMarker = new google.maps.Marker({
-      position: this.routePoints[0],
+    // Create custom content for the vehicle marker
+    const content = document.createElement('div');
+    content.innerHTML = `
+      <div class="vehicle-marker" style="
+        background: #4285F4;
+        border: 2px solid #FFFFFF;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        position: relative;
+      ">
+        <div style="
+          position: absolute;
+          top: -2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 6px solid transparent;
+          border-right: 6px solid transparent;
+          border-bottom: 8px solid #4285F4;
+        "></div>
+      </div>
+    `;
+    
+    this.state.vehicleMarker = new this.AdvancedMarkerElement({
       map: this.map,
-      title: 'Vehicle',
-      icon: {
-        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-        scale: 6,
-        fillColor: '#4285F4',
-        fillOpacity: 1,
-        strokeColor: '#FFFFFF',
-        strokeWeight: 2
-      }
+      position: this.routePoints[0],
+      content: content,
+      title: 'Vehicle'
     });
   }
 
@@ -247,7 +271,7 @@ export class RouteSimulation {
     this.state.activeGeofences.clear();
     this.state.geofenceHistory = [];
     if (this.state.vehicleMarker) {
-      this.state.vehicleMarker.setPosition(this.routePoints[0]);
+      this.state.vehicleMarker.position = this.routePoints[0];
     }
     this.updateGeofenceDisplay();
     console.log('Route simulation reset');
@@ -281,7 +305,7 @@ export class RouteSimulation {
     // Update vehicle position
     if (this.state.vehicleMarker) {
       const newPosition = { lat: interpolatedLat, lng: interpolatedLng };
-      this.state.vehicleMarker.setPosition(newPosition);
+      this.state.vehicleMarker.position = newPosition;
       
       // Calculate heading for vehicle orientation
       const heading = google.maps.geometry.spherical.computeHeading(
@@ -289,15 +313,37 @@ export class RouteSimulation {
         new google.maps.LatLng(nextPoint.lat, nextPoint.lng)
       );
       
-      this.state.vehicleMarker.setIcon({
-        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-        scale: 6,
-        fillColor: '#4285F4',
-        fillOpacity: 1,
-        strokeColor: '#FFFFFF',
-        strokeWeight: 2,
-        rotation: heading
-      });
+      // Update the vehicle marker content with rotation
+      const content = document.createElement('div');
+      content.innerHTML = `
+        <div class="vehicle-marker" style="
+          background: #4285F4;
+          border: 2px solid #FFFFFF;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+          position: relative;
+          transform: rotate(${heading}deg);
+        ">
+          <div style="
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 8px solid #4285F4;
+          "></div>
+        </div>
+      `;
+      
+      this.state.vehicleMarker.content = content;
     }
 
     // Check geofence detection
